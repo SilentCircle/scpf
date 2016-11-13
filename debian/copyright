@@ -1,21 +1,21 @@
 This package was debianized by Edwin Fine <emofine@usa.net>
-Tue Dec 18 17:40:05 EDT 2016
+Tue Dec 18 17:40:05 EDT 2012
 
 It was downloaded from <url://basho.com>
 
 Upstream Author(s):
-
+    
 
 Copyright:
-    2016 Silent Circle LLC
+    2012 Silent Circle LLC
 
 License:
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
     You may obtain a copy of the License at
-
+    
     http://www.apache.org/licenses/LICENSE-2.0
-
+    
     Unless required by applicable law or agreed to in writing, software
     distributed under the License is distributed on an "AS IS" BASIS,
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,7 +24,7 @@ License:
 
 The Debian packaging is:
 
-    2016 Silent Circle LLC
+    2012 Silent Circle LLC
 
 and is licensed under the Apache License, Version 2.0
 

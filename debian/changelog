@@ -1,10 +1,27 @@
-scpf (1.1.19) stable; urgency=medium
+scpf (2.0.0) unstable; urgency=medium
 
-  * Initial open source release.
-  * Version 1.1.19
+  * Version 2.0.0
 
-    * Fix rebar.config.lock, which had older versions of apns_erl and sc_push
-      repositories. The only functional difference is that sc_push now does
-      asynchronous pushes; other changes involve documentation and cleanup.
+    * Add support for APNS HTTP/2.
+    * Add some library support for JWT, but it's not ready for use with
+      APNS HTTP/2. That will come in a future release.
+    * Deprecate old APNS session (apns_erl) in favor of apns_erlv3.
+      apns_erl (binary APNS interface) probably doesn't even work any more.
+    * Add genuine async push support (not just cast to gen_xxx).
+    * Do major refactoring.
+    * Redo most test cases to use new APNS and improved GCM simulators.
+    * Change APIs (breaking changes for push).
+    * Add and update significant amount of documentation.
+    * Make ready for open source by adding headers, copyrights, and licences.
+      Remove, change, or sanitize SC-specific information and references.
+    * Move repositories to public github.
 
- -- Edwin Fine <efine@silentcircle.com>  Thu, 18 Feb 2016 09:09:20 -0500
+ -- Edwin Fine <efine@silentcircle.com>  Sun, 13 Nov 2016 13:54:53 -0500
+
+scpf (1.2.0) unstable; urgency=medium
+
+  * Version 1.2.0
+
+    * Initial open source commit.
+
+ -- Edwin Fine <efine@silentcircle.com>  Sun, 13 Nov 2016 13:54:53 -0500

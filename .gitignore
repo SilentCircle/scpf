@@ -2,7 +2,7 @@
 .rebar/
 MANIFEST
 build
-build/
+_build/
 debian/files
 debian/scpf.debhelper.log
 debian/scpf.postinst.debhelper
@@ -11,7 +11,6 @@ debian/scpf.prerm.debhelper
 debian/scpf.service
 debian/scpf.substvars
 debian/scpf/
-deps/
 distdir/
 doc/*.html
 doc/api/
@@ -21,7 +20,15 @@ doc/overview.edoc
 doc/stylesheet.css
 ebin/
 logs/
-rel/reltool.config
-rel/scpf/
 scpf*.tar.gz
 test/*.beam
+doc/man/scpf.1
+tools/
+*.crashdump
+_checkouts/
+Mnesia.*/
+log/
+certs/
+sasl_error.log
+INSTALL_DIR
+_debian_build/

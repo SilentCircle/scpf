@@ -1,16 +1,15 @@
-# Silent Circle Push Framework
 
-[See the API documentation](https://rawgit.com/SilentCircle/scpf/master/doc/api/index.html).
 
-## IMPORTANT - Work in progress
+# Silent Circle Push Framework (SCPF) #
 
-This is an open source version of SCPF that has had some code
-changes to make it more generic. These changes are still in
-progress, and some things are broken. Feel free to look around, but
-please understand that SCPF and its dependencies in this repository
-are unlikely to work until this notice is removed.
+Copyright (c) 2016 Silent Circle
 
-## Purpose
+__Version:__ 2.0.0
+
+__Authors:__ Edwin Fine ([`efine@silentcircle.com`](mailto:efine@silentcircle.com)).
+
+
+### <a name="Purpose">Purpose</a> ###
 
 The Silent Circle Push Framework (SCPF) provides a private, general
 interface to push notification services such as Apple Push Service
@@ -20,13 +19,17 @@ requests to and from service-specific API layers. The general API
 layer is named `sc_push`, and it supports the operations described
 in this document.
 
-## Overview
+---
+
+
+### <a name="Use_Cases">Use Cases</a> ###
 
 The basic use cases for SCPF are straightforward.
 
-### Definitions
 
-*user*
+### <a name="Definitions">Definitions</a> ###
+
+_user_
 
 - An installed application on a specific device
 - Correctly set up to receive push notifications from its Push
@@ -36,53 +39,70 @@ The basic use cases for SCPF are straightforward.
 - Has a user id (`tag`) provided by the application.
 - Has a universally unique application installation identity
   (`device_id`), by which the installed application instance, on
-  that specific, physical device, may be identified. `device_id` is
-  an unfortunate historical name, as it really names an installed
-  application instance.
+  that specific, physical device,can be identified. `device_id` is
+the unfortunately misleading historical name for this.
 
-### Use Case 1: Register a user
+---
+
+
+### <a name="Use_Case_1:_Register_a_user">Use Case 1: Register a user</a> ###
 
 - Application receives a push token from its Push Service.
 - Application registers the "user" (application instance).
 
-### Use Case 2: Push a notification to a user
+---
+
+
+### <a name="Use_Case_2:_Push_a_notification_to_a_user">Use Case 2: Push a notification to a user</a> ###
 
 - A service needs to send a short textual notification to
-  a "user".
+a "user".
 - The service provides the notification and the identity of
-  the user in a call to the API.
+the user in a call to the API.
 - The API sends the notification to zero, one, or more
-  "users", depending on the API call used and its parameters.
-  See the API calls for details.
+"users", depending on the API call used and its parameters.
+See the API calls for details.
 
-### Use Case 3: Deregister a user
+---
+
+
+### <a name="Use_Case_3:_Deregister_a_user">Use Case 3: Deregister a user</a> ###
 
 - The user discontinues the service.
 - The service deletes the user's `device_id` using this API.
 - All registrations matching that `device_id` are deleted.
 - No further push notifications should go to that user.
 
-### Use Case 4: Re-register a token
+---
+
+
+### <a name="Use_Case_4:_Re-register_a_token">Use Case 4: Re-register a token</a> ###
 
 - The push service provides the application with a new token, and
-  the currently registered token is, or will soon be, invalid. This
-  can happen for a number of reasons that are out of scope for this
-  API document.
+the currently registered token is, or will soon be, invalid. This
+can happen for a number of reasons that are out of scope for this
+API document.
 - The application calls this API to re-register the token, or delete
-  the old one and register the new one. The reregister API requires
-  both the device id and tag for uniqueness.
+the old one and register the new one. The reregister API requires
+both the device id and tag for uniqueness.
 - The registration record is updated with the new token (reregister
-  API) or deleted and recreated in separate operations.
+API) or deleted and recreated in separate operations.
 
-### Use Case 5: Push a notification without prior registration
+---
+
+
+### <a name="Use_Case_5:_Push_a_notification_to_an_unregistered_device">Use Case 5: Push a notification to an unregistered device</a> ###
 
 - The caller provides the service name, app id, and token
-  (registration ID) to the API, along with notification parameters.
+(registration ID) to the API, along with notification parameters.
 - The API sends the notification to the device.
 - This use case is applicable when the registration data is kept
-  externally, and SCPF is used only to deliver the notifications.
+externally, and SCPF is used only to deliver the notifications.
 
-## Supported Push Notification Services
+---
+
+
+### <a name="Supported_Push_Notification_Services">Supported Push Notification Services</a> ###
 
 SCPF currently supports these services:
 
@@ -94,58 +114,93 @@ relatively straightforward. The basic `sc_push` API should remain
 unchanged, so code that currently uses it will require little or no
 modification.
 
-This does not apply to code that uses service-specific features,
-such as the `collapse-key` GCM feature.
+This does not apply to code that uses advanced service-specific
+features, such as the `collapse-key` GCM feature.
 
-## Interface
+---
+
+
+### <a name="Interface">Interface</a> ###
 
 The API currently supports the following interfaces:
 
 - Erlang native API
 - REST API (default port 8765)
 
-## Registration API
+---
 
-### Purpose
 
-To register a device's push identification persistently with SCPF,
-and associate it with a SCPF tag, so that the Push API may direct
-notifications to all devices associated with the tag. If the device
-service and token is known, a push notification may be sent to a
-single specific device.
+### <a name="Authentication">Authentication</a> ###
 
-#### Extended API
+The Erlang native API is only accessible to Erlang nodes that have
+both access to the host on which the API is running (port 4369), and
+the Erlang cookie for that node. Since port 4369 will never be
+public facing, and moreover will not even be generally accessible,
+authentication is neither possible nor necessary for Erlang code.
+
+A significant portion of the Erlang API is indirectly accessible via
+the REST API.
+
+The REST API is HTTP-only, without authentication, which means that
+until authentication and HTTPS support are added, it should only be
+used behind an authenticating reverse proxy server, or on localhost.
+
+---
+
+
+### <a name="Registration_API">Registration API</a> ###
+
+
+### <a name="Purpose">Purpose</a> ###
+
+To register a device's push identification with SCPF, and associate
+it with a SCPF tag, so that the Push API may direct notifications to
+all devices associated with the tag. If the device service and token
+is known, a push notification may be sent to a specific device only.
+
+
+#### <a name="Extended_API">Extended API</a> ####
 
 There is an extended API, available in both Erlang and REST, that
 supports sending a push notification to unregistered devices.  To do
 this, the service, app ID, and token must be provided by the caller,
 and the app ID must have been configured for the SCPF service.
 
-### Summary
+---
 
-- Register for push
-- Unregister for push
+
+### <a name="Summary">Summary</a> ###
+
+- Register for push notifications
+- Unregister for push notifications
 - Reregister a token
 - Get registration info by tag
 - Get registration info by service+token
 - Get registration info for a device id
 
-### Overview
+
+### <a name="Overview">Overview</a> ###
 
 The basic purpose of the API is to register  which the
 device-specific notification service provides, and associate it with
 a tag. This identifier is referred to in this documentation as the
-**token**, and corresponds to the _GCM registration ID_, or the
-_APNS push token_.  The **tag** is a string that SCPF uses as a
+__token__, and corresponds to the _GCM registration ID_, or the
+_APNS push token_.  The __tag__ is a string that SCPF uses as a
 destination for push notifications. This may, for example, be a user
 ID or SIP address.
 
-Multiple registrations having the same tag will receive a copy of
-the push notification that is sent to that tag.  For example, if an
+There is no technical restriction on the format of the tags. They are binaries that are opaque to SCPF (and consequently case-sensitive, if binary strings).
+If, for example, it would be useful for the tag to be a URN or URL, there is nothing to prevent that.
+
+__WARNING__: Tags are used in URLs of certain endpoints, so it is advisable to avoid tags that would require urlencoding.
+
+Multiple registations having the same tag will receive a copy of the
+push notification that is sent to that tag.  For example, if an
 Android device has registered a GCM ID under tag
-`12345678@example.com`, and an iOS device has registered an APNS
-push token under the same tag, then a notification sent to the one
-will also be sent to the other at the same time.
+`sip:12345678@sip.example.com`, and an iOS device has
+registered an APNS push token under the same tag, then a
+notification sent to the one will also be sent to the other at the
+same time.
 
 This API also supports unregistering by tag, token, or device id,
 and re-registering a token that has become stale and needs to be
@@ -156,219 +211,274 @@ or stale.
 Finally, the API is able to look up registration information by tag,
 by device id, and by service/token combination.
 
-**NOTE**
+__NOTE__
 
-- The **token** must be unique within a given service (e.g. APNS).
-- The **device id** must be unique across all services. A UUID is a
-  reasonable choice.
-- The **tag** is a user/application-level grouping identifier. The
-  device id/tag combination must be unique across all services.
+- The __token__ must be unique within a given service (e.g. APNS).
+- The __device id__ must be unique across all services. A UUID is a
+  good choice.
+- The __tag__ is a user/application-level grouping identifier. The
+device id/tag combination must be unique across all services. It is
+strongly advisable to format the tag such that it does not require
+url encoding, so it can be used easily in the REST API calls.
 
-## Registration REST API
+---
 
-**NOTE**
 
-The URLs may have a prefix of something like `scpf/rest/v1`. The
-examples shown here omit the prefix.
+### <a name="Registration_REST_API">Registration REST API</a> ###
 
-### Register for push notifications
 
-#### PUT /registration/device/:device\_id/tag/:tag
+### <a name="Register_for_push_notifications">Register for push notifications</a> ###
 
-**Supported Content-Types**
+__Endpoint__
+
+`/registration/device/:device_id/tag/:tag`
+
+__Method__
+
+`PUT` - Adds or updates a registration by device ID/tag
+
+__Supported Content-Types__
 
 - `application/json`
 
-**Request Parameters**
+__Request Parameters__
 
 - `device_id`: A caller-specific resource ID.
-- `tag`: The tag under which registrations were made.
-- `app_id`: The client application ID, which is the APNS
-  `appBundleId` or the GCM package ID.
+- `tag`: The tag under which registrations were made (including`sip:` prefix).
+- `app_id`: The client application ID, which is the APNS`appBundleId`/`apns_topic`, or the GCM package ID.
 - `service`: The push notification service, currently either `apns`
   or `gcm`.
 - `token`: The push service token/registration ID.
 - `dist`: Distribution, either `prod` or `dev`. Only really applies
   to Apple's APNS, and should almost always be `prod`. `dev` only
-  applies to APNS ad-hoc builds that use Development server-side
-  push certificates.
+applies to APNS ad-hoc builds that use Development server-side
+push certificates, or universal push certificates that are used with
+development tokens on the development push service.
 
-**Sample JSON**
+__Sample JSON__
 
-```json
-{
-    "app_id": "com.example.awesomeapp",
-    "service": "gcm",
-    "tag": "sip:number@sip.example.com",
-    "token": "some_very_long_token",
-    "dist": "prod"
-}
+```
+ {
+     "app_id": "com.example.someapp",
+     "service": "gcm",
+     "tag": "sip:number@sip.example.net",
+     "token": "some_very_long_token",
+     "dist": "prod"
+ }
 ```
 
-**Response**
+__Response__
 
-    204 No Content
+- 204 No Content
 
-### Deregister from push notifications
+---
 
-#### DELETE /registration/service/:service/token/:token
 
-Deletes a collection.
+### <a name="Deregister_from_push_notifications_by_service/token">Deregister from push notifications by service/token</a> ###
 
-**Request Parameters**
+__Endpoint__
 
-- service: Currently `gcm` or `apns`, but may support other services
+`/registration/service/:service/token/:token`
+
+__Method__
+
+`DELETE` - Deletes a collection by service/token.
+
+__Request Parameters__
+
+- `service`: Currently `gcm` or `apns`, but may support other services
   in future
-- token: The GCM registration ID or APNS token. Note that this may
-  delete multiple registrations.
+- `token`: The GCM registration ID or APNS token. Note that this may
+delete multiple registrations.
 
-**Responses**
+__Responses__
 
-    - 204 No Content
-    - 404 Object Not Found
+- 204 No Content
+- 404 Object Not Found
 
-#### DELETE /registration/device/:device\_id
+---
 
-Deletes a collection.
 
-**Request Parameters**
+### <a name="Deregister_from_push_notifications_by_device_id">Deregister from push notifications by device id</a> ###
+
+__Endpoint__
+
+`/registration/device/:device_id`
+
+__Method__
+
+`DELETE` - Deletes a collection by device ID.
+
+__Request Parameters__
 
 - `device_id`: A caller-defined key value. Note that this endpoint
-  is a collection, and **all** registrations matching `device_id`
-  will be deleted.
+  is a collection, and __all__ registrations matching `device_id`
+will be deleted.
 
-**Response**
+__Responses__
 
-    - 204 No Content
-    - 404 Object Not Found
+- 204 No Content
+- 404 Object Not Found
 
-#### DELETE /registration/tag/:tag
+---
 
-Deletes a collection.
 
-This will delete **all** registration information for that tag,
+### <a name="Deregister_from_push_notifications_by_tag">Deregister from push notifications by tag</a> ###
+
+__Endpoint__
+
+`/registration/tag/:tag`
+
+__Method__
+
+`DELETE` - Deletes a collection by tag.
+
+This will delete __all__ registration information for that tag,
 which might be multiple tokens across multiple push services.
 
-**Request Parameters**
+__Request Parameters__
 
-- `tag`: The tag under which registrations were made (including
-  `sip:` or other prefix).
+- `tag`: The tag under which registrations were made (including`sip:` or other prefix).
 
-**Response**
+__Response__
 
-    - 204 No Content
-    - 404 Object Not Found
+- 204 No Content
+- 404 Object Not Found
 
-### Registration Information
+---
 
-#### GET /registration/service/:service/token/:token
 
-Retrieves a collection.
+### <a name="Get_registration_information_by_service/token">Get registration information by service/token</a> ###
 
-**Request Parameters**
+__Endpoint__
+
+`/registration/service/:service/token/:token`
+
+__Method__
+
+`GET` - Retrieves a collection.
+
+__Request Parameters__
 
 - `service`: Currently `gcm` or `apns`, but may support other
   services in future
 - `token`: The GCM registration ID or APNS token
 
-**Response**
+__Response__
 
 The response will be (if a 200 status) a registration collection.
 
-**Example**
+__Example__
 
-```http
-GET /registration/service/gcm/token/some_very_long_token
-
-HTTP/1.1 200 OK
-Content-Type: application/json
-
-[
-    {
-        "app_id": "com.example.awesomeapp",
-        "service": "gcm",
-        "tag": "sip:user@example.com",
-        "device_id": "",
-        "token": "Some_very_long_token",
-        "dist": "prod"
-    }
-]
+```
+ GET /registration/service/gcm/token/some_very_long_token
+ HTTP/1.1 200 OK
+ Content-Type: application/json
+ [
+     {
+         "app_id": "com.example.someapp",
+         "service": "gcm",
+         "tag": "sip:user@example.com",
+         "device_id": "",
+         "token": "Some_very_long_token",
+         "dist": "prod"
+     }
+ ]
 ```
 
-#### GET /registration/tag/:tag
+---
 
-Retrieves a collection.
 
-**Request Parameters**
+### <a name="Get_registration_information_by_tag">Get registration information by tag</a> ###
 
-- `tag`: The tag under which registrations were made (including `xmpp:` or `sip:`
-  prefix).
+__Endpoint__
 
-**Response**
+`/registration/tag/:tag`
+
+__Method__
+
+`GET` - Retrieves a collection by tag.
+
+__Request Parameters__
+
+- `tag`: The tag under which registrations were made.
+
+__Response__
 
 The response will be (if a 200 status) a registration collection.
 
-**Example**
+__Example__
 
-```http
-GET /registration/tag/sip:user@example.com
-HTTP/1.1 200 OK
-Content-Type: application/json
-
-[
-    {
-        "app_id": "com.example.awesomeapp",
-        "dist": "prod",
-        "service": "apns",
-        "tag": "sip:user@example.com",
-        "device_id": "foo",
-        "token": "apns_token"
-    },
-    {
-        "app_id": "com.example.awesomeapp",
-        "dist": "prod",
-        "service": "gcm",
-        "tag": "sip:user@example.com",
-        "device_id": "bar",
-        "token": "Some_very_long_token"
-    }
-]
+```
+ GET /registration/tag/sip:user@example.com
+ HTTP/1.1 200 OK
+ Content-Type: application/json
+ [
+     {
+         "app_id": "com.example.someapp",
+         "dist": "prod",
+         "service": "apns",
+         "tag": "sip:user@example.com",
+         "device_id": "foo",
+         "token": "apns_token"
+     },
+     {
+         "app_id": "com.example.someapp",
+         "dist": "prod",
+         "service": "gcm",
+         "tag": "sip:user@example.com",
+         "device_id": "bar",
+         "token": "Some_very_long_token"
+     }
+ ]
 ```
 
-#### GET /registration/device/:device\_id
+---
 
-Retrieves a collection.
 
-**Request Parameters**
+### <a name="Get_registration_information_by_device_ID">Get registration information by device ID</a> ###
+
+__Endpoint__
+
+`/registration/device/:device_id`
+
+__Method__
+
+`GET` - Retrieves a collection by device ID.
+
+__Request Parameters__
 
 - `device_id`: A caller-defined key value.
 
-**Response**
+__Response__
 
 The response will be (if a 200 status) a registration collection.
 
-**Example**
+__Example__
 
-```http
-GET /registration/device_id/:device_id
-
-HTTP/1.1 200 OK
-Content-Type: application/json
-
-[
-{
-    "app_id": "com.example.awesomeapp",
-    "service": "gcm",
-    "tag": "sip:user@example.com",
-    "device_id": ":device_id",
-    "token": "Some_very_long_token",
-    "dist": "prod"
-}
+```
+ GET /registration/device_id/:device_id
+ HTTP/1.1 200 OK
+ Content-Type: application/json
+ [
+     {
+         "app_id": "com.example.someapp",
+         "service": "gcm",
+         "tag": "sip:user@example.com",
+         "device_id": ":device_id",
+         "token": "Some_very_long_token",
+         "dist": "prod"
+     }
+ ]
 ```
 
-## Push Notification API
+---
 
-### Purpose
+
+### <a name="Push_Notification_API">Push Notification API</a> ###
+
+
+### <a name="Purpose">Purpose</a> ###
 
 To send notifications to devices on a supported push network.
 
@@ -377,49 +487,60 @@ used as an address for the notification, or, if the device token is
 known, the notification may be sent directly using the extended API.
 In the latter case, the device need not be registered with SCPF.
 
-### Summary
+
+### <a name="Summary">Summary</a> ###
 
 - Send a notification to a tag
 - Send a notification to a token within a service
 - Send a notification by service, app id and token
 
-### Discussion
+
+### <a name="Discussion">Discussion</a> ###
 
 This API permits the caller to send notifications to devices that
 may or may not be registered with SCPF.
 
-A notification may be sent using the **tag**, in which case it will
-be sent to all devices (**tokens**) associated with that tag; to
+A notification may be sent using the __tag__, in which case it will
+be sent to all devices (__tokens__) associated with that tag; to
 a specific service/token combination; or to a service/appid/token.
 
-## Push Notification REST API
+---
 
-### Send a push notification
 
-#### Push request format
+### <a name="Push_Notification_REST_API">Push Notification REST API</a> ###
+
+
+### <a name="Push_request_format">Push request format</a> ###
 
 A push request is supplied as a JSON dictionary. The minimum
 information is the `alert` text. Additional information may be added
 on a service-specific basis.
 
-```json
-{
-    "alert": "Alert text goes here"
-}
+```
+ {
+     "alert": "Alert text goes here"
+ }
 ```
 
-##### APNS-specific Request
+
+#### <a name="APNS-specific_Request">APNS-specific Request</a> ####
 
 The `alert` key is mandatory.
 
-```json
-    {
-        "alert": "Alert text goes here",
-        "aps": {"badge": 3, "sound": "file.wav"}
-    }
+```
+ {
+     "alert": "Alert text goes here",
+     "aps": {"badge": 3, "sound": "file.wav"}
+ }
 ```
 
-##### GCM-specific Request
+__Note__
+
+- `aps` dictionary is optional
+- `aps` dictionary items are optional
+
+
+#### <a name="GCM-specific_Request">GCM-specific Request</a> ####
 
 This bears some explanation. Whatever goes in the `data` dictionary
 is what the client application receives. The `alert` key gets
@@ -440,241 +561,218 @@ The optional `gcm` dictionary is what accepts GCM-specific keywords, such as
 
 See the GCM documentation for more information on these keywords.
 
-```json
-{
-    "data": {
-        "alert": "Alert text goes here",
-        "purpose": "reload_v1_me"
-    },
-    "gcm": {
-        "collapse_key": "foobarbaz",
-        "priority": "high"
-    }
-}
+```
+ {
+     "data": {
+         "alert": "Alert text goes here",
+         "purpose": "reload_v1_me"
+     },
+     "gcm": {
+         "collapse_key": "foobarbaz",
+         "priority": "high"
+     }
+ }
 ```
 
-Note:
+---
 
-- `aps` dictionary is optional
-- `aps` dictionary items are optional
 
-#### Response Format
+### <a name="Response_Format">Response Format</a> ###
 
 Every JSON response has a top-level `results` key. A successful response
 contains an array of objects, each of which contain either an `id` key
 or an `error` key. Each element of the array corresponds to the alert sent,
-if multiple alerts were sent in a single request (**note**: future functionality).
+if multiple alerts were sent in a single request (__note__: future functionality).
 
-**Success Response**
+__Success Response__
 
-```http
-HTTP/1.1 200 OK
-Content-Type: application/json
-
-{
-    "results": [
-        {
-            "id": "opaque_identifier"
-        }
-    ]
-}
+```
+ HTTP/1.1 200 OK
+ Content-Type: application/json
+ {
+     "results": [
+         {
+             "id": "opaque_identifier"
+         }
+     ]
+ }
 ```
 
-**Error Responses**
+__Error Responses__
 
 There may a number of different error responses. If the request was correctly
 formatted, the response will be in JSON with an HTTP status code of 200. This is true
 even if the response has errors, so the JSON must always be checked.
 
-```http
-HTTP/1.1 200 OK
-Content-Type: application/json
-
-{
-    "results": [
-        {
-            "error": "reg_not_found_for_token: \"token\""
-        }
-    ]
-}
+```
+ HTTP/1.1 200 OK
+ Content-Type: application/json
+ {
+     "results": [
+         {
+             "error": "reg_not_found_for_token: \"token\""
+         }
+     ]
+ }
 ```
 
 If the request was bad, though, the server will return a `400 Bad Request` status
 and plain text content, for example, if the key `"alert"` was omitted or misspelled:
 
-```http
-HTTP/1.1 400 Bad Request
-Content-Type: text/plain; charset=UTF-8
-
-{missing_data_or_alert,[{token,<<"token">>},{alet,<<"Test">>},{tag,undefined}
+```
+ HTTP/1.1 400 Bad Request
+ Content-Type: text/plain; charset=UTF-8
+ {missing_data_or_alert,[{token,<<"token">>},{alet,<<"Test">>},{tag,undefined}
 ```
 
-#### POST /push/send/service/:service/token/:token
+---
 
-Send a notification to a specific service and token. Currently,
-notifications are only accepted in JSON format.
 
-**Request Parameters**
+### <a name="Send_notification_to_service/token">Send notification to service/token</a> ###
+
+__Endpoint__
+
+`/push/send/service/:service/token/:token`
+
+__Method__
+
+`POST` - Send a notification to a specific service and token.
+
+Notifications are only accepted in JSON format.
+
+__Request Parameters__
 
 - `service`: Currently `gcm` or `apns`, but may support other
   services in future
 - `token`: The GCM registration ID or APNS token
 - `alert`: The notification message text
 
-**Request**
+__Request__
 
-```http
-POST /push/send/service/:service/token/:token
-Content-Type: application/json
-
-{
-    "alert": "Alert text goes here"
-}
+```
+ POST /push/send/service/:service/token/:token
+ Content-Type: application/json
+ {
+     "alert": "Alert text goes here"
+ }
 ```
 
-**Response**
+__Response__
 
 Responses are the same for all `/push/send` API calls. See
 "Response Format"  section.
 
-#### POST /push/send/tag/:tag
+---
 
-Send a notification to a `tag`. This will send a notification
-message to each token that was registered under that tag, so that
-multiple devices, even from different services (APNS and GCM, say),
-will require sending this REST API call only a single notification.
 
-**Request Parameters**
+### <a name="Send_notification_to_tag">Send notification to tag</a> ###
+
+__Endpoint__
+
+`/push/send/tag/:tag`
+
+__Method__
+
+`POST` - Send a notification to a tag.
+
+This will send a notification message to each token that was registered under that tag, so that
+multiple devices, even using different services (APNS and GCM, say),
+will receive the notification from a single call to this endpoint.
+
+__Request Parameters__
 
 - `tag`: The tag given to the registration API.
 - `alert`: The notification message text
 
-**Request**
+__Request__
 
-```http
-POST /push/send/tag/:tag
-Content-Type: application/json
-
-{
-    "alert": "Alert text goes here"
-}
+```
+ POST /push/send/tag/:tag
+ Content-Type: application/json
+ {
+     "alert": "Alert text goes here"
+ }
 ```
 
-**Response**
+__Response__
 
 Responses are the same for all `/push/send` API calls. See
 "Response Format" section.
 
-#### POST /push/send/service/:service/app\_id/:app\_id/token/:token
+---
 
-Send a notification to an APNS token or (GCM registration ID belonging to a specific app id
 
-**Request Parameters**
+### <a name="Send_notification_to_service/appid/token">Send notification to service/appid/token</a> ###
+
+__Endpoint__
+
+`/push/send/service/:service/app_id/:app_id/token/:token`
+
+__Method__
+
+`POST` - Send a notification to an APNS token or (GCM registration ID) belonging to a specific app id.
+
+This allows the caller to send a notification to an unregistered device if the device's token is known.
+
+__Request Parameters__
 
 - `service`: The service to use, currently `gcm` or `apns`.
-- `app_id`: The client application ID, which is the APNS
-  `appBundleId` or the Android's application ID.
+- `app_id`: The client application ID, which is the APNS`appBundleId` or the Android's application ID.
 - `token`: The APNS token or GCM registration ID.
 - `alert`: The notification message text.
 
-**Request**
+__Request__
 
-```http
-POST /push/send/service/:service/app_id/:app_id/token/:token
-Content-Type: application/json
-
-{
-    "alert": "Alert text goes here"
-}
+```
+ POST /push/send/service/:service/app_id/:app_id/token/:token
+ Content-Type: application/json
+ {
+     "alert": "Alert text goes here"
+ }
 ```
 
-**Response**
+__Response__
 
 Responses are the same for all `/push/send` API calls. See
 "Response Format" section.
 
-## Building
+---
 
-### Build Prerequisites
 
-* Erlang 17 or later (64 bit)
-* GNU Make 3.81 or later
-* rebar 2.0 or later
+### <a name="Building">Building</a> ###
 
-### Getting Erlang
 
-The Debian repository has a suitable version of Erlang. SCPF has
-been run in production with Erlang 17 on Debian jessie amd64.
+### <a name="Build_Prerequisites">Build Prerequisites</a> ###
 
-### About rebar
+- Erlang 18.3 or later (64 bit)
+- GNU Make 3.81 or later
+- `rebar3`
 
-SCPF builds with rebar 2.x (>= 2.6.1).
 
-There is a version of rebar stored in the scpf git repository. This
-is because the Debian build is unable to access rebar if it is on
-the path.  If this version needs to be updated, you can do it as
-follows:
+### <a name="Building_the_application">Building the application</a> ###
 
-```bash
-git clone git://github.com/basho/rebar.git
-cd rebar
-make
-cp rebar $SCPF_DIR/rebar
-cd $SCPF_DIR
-git commit -m"Update rebar" rebar
+```
+ git clone git@github.com:example/scpf.git
+ cd scpf
+ make rel
 ```
 
-### Building the application
 
-```bash
-git clone https://github.com/SilentCircle/scpf/scpf.git
-cd scpf
-make rel
+### <a name="Building_documentation">Building documentation</a> ###
+
+Note that Erlang and `pandoc` are required to build the documentation.
+
+```
+ make doc
 ```
 
-### Self-testing the application
+The Erlang documentation is in Markdown format and will be in `README.md`, with dependent Markdown files in `doc/`. There is also a `man` page in `doc/man/scpf.1`.
 
-#### Running tests
 
-Test cases may require outbound Internet access to connect to
-external services, so these tests may fail on systems that lack this
-access.  APNS test push certificates expire and, as of the time of
-writing, apparently cannot be automated, so they are not useful.
+### <a name="Creating_an_unsigned_Debian_package">Creating an unsigned Debian package</a> ###
 
-It is possible that in future, mocked services will be added to
-avoid this issue.
-
-```bash
-make ct
 ```
-
-To inspect test results, open a browser on `logs/index.html`. Note
-that to get the latest test results, `index.html` must be reloaded
-in the browser.
-
-#### TODO
-
-Frankly, the test cases are suffering from bit-rot and need
-attention.
-
-### Building API documentation
-
-Note that Erlang is required to build the documentation.
-
-```bash
-make doc
-```
-
-The SCPF Erlang API documentation is generated in HTML format
-(top-level page is in `doc/index.html`).
-
-### Creating a Debian package
-
-The Debian build for SCPF is targeted at jessie or later, and uses
-systemd unit files for startup and shutdown.
-
-```bash
-dpkg-buildpackage -us -uc
+ dpkg-buildpackage -us -uc
 ```
 
 The output files (`.deb`, `.changes`, `.tar.gz` and `.dsc`) will be
@@ -684,163 +782,316 @@ For convenience, there is also a `dev_package` make target, which
 will create Debian files (such as `.deb`, `.dsc`, etc) in the
 `distdir` subdirectory.
 
-## Configuration
+---
 
-* `/etc/scpf/vm.args` - edit the environment variables
+
+### <a name="Configuration">Configuration</a> ###
+
+`scpf` installation aims to comply with the [Filesystem Hierarchy
+Standard (FHS)](http://refspecs.linuxfoundation.org/fhs.shtml) as
+much as possible. When installed via a Debian package, a user,
+`scpf`, is created, which is the owner of all its files.
+
+- `/etc/scpf` - Contains configuration files for scpf:
+    - vm.args`- edit the environment variables
   `WEBMACHINE_IP` and `WEBMACHINE_PORT`. This configuration will
   change more often than the other. In this file, the default IP is
-  set to `::`, and the default port is `8765`.
-* `/etc/scpf/app.config` - this contains Erlang-specific
+  set to `&#183;`, and the default port is `8765`.
+    - `sys.config` - this contains Erlang-specific
   configuration items.
-* `/var/log/scpf` - Contains log files for this application:
-  * `console.log` (regular console log messages)
-  * `error.log` (error log messages), and
-  * `crash.log` - details of things that caused an Erlang service to
-    crash. An Erlang application crash is often not quite as serious
-    as it seems, because good Erlang applications are written to
-    restart crashed components automatically. Sometimes, unless one
-    is actively looking, components can crash regularly for months
-    and nobody notices. This can be a bad thing because
-    less-critical bugs can go unnoticed.
+- `/var/log/scpf` - Contains log files for this application:
+    - `console.log` (regular console log messages)
+    - `error.log` (error log messages), and
+    - `crash.log` - details of crashes.
 
-## Running
+---
+
+
+### <a name="Self-testing_the_application">Self-testing the application</a> ###
+
+```
+ make ct
+```
+
+To inspect test results, open a browser on `_build/test/lib/scpf/logs/index.html`. Note that to get the latest test results, `index.html` must be reloaded in the browser.
+
+---
+
+
+### <a name="Running">Running</a> ###
 
 The application can be run from the development directory (for
 testing), or started and stopped as a Debian service, if it has been
 installed.
 
-### scpf Command-line Utility
+
+### <a name="scpf_Command-line_Utility">scpf Command-line Utility</a> ###
 
 Assuming the package has been installed on Debian, `scpf` has a man
 page.
 
-```bash
-    man scpf
+```
+ man scpf
 ```
 
-### Service Startup
+To view it before installation,
+
+```
+ make doc
+ man doc/man/scpf.1
+```
+
+
+### <a name="Service_Startup">Service Startup</a> ###
 
 This assumes that `systemd` is being used.
 
-```bash
-sudo systemctl start scpf
-sudo systemctl status scpf
+```
+ sudo systemctl start scpf
 ```
 
-### Service Shutdown
 
-```bash
-sudo systemctl stop scpf
-sudo systemctl status scpf
+### <a name="Service_Shutdown">Service Shutdown</a> ###
+
+```
+ sudo systemctl stop scpf
 ```
 
-### Startup (Development)
 
-```bash
-rel/scpf/bin/scpf start # Start it in the background
-rel/scpf/bin/scpf status  # Check that it's running
+### <a name="Service_Status">Service Status</a> ###
+
+```
+ sudo systemctl status scpf
 ```
 
-### Shutdown (Development)
 
-```bash
-rel/scpf/bin/scpf stop
+### <a name="Startup_(Development)">Startup (Development)</a> ###
+
+```
+ make run
 ```
 
-# Internals
+This starts an Erlang shell using `config/shell.config`. This configuration is minimal and has no sessions defined in it.
+
+
+### <a name="Shutdown_(Development)">Shutdown (Development)</a> ###
+
+Exit the shell.
+
+---
+
+
+### <a name="Internals">Internals</a> ###
 
 SCPF is an Erlang application that runs in its own Erlang node,
-named with a longname `scpf@<host.domain>`. For example, if it were
-running on host `zaphod.example.com`, the node would be named
-`scpf@zaphod.example.com`.  The Debian installation package creates
-a user, not coincidentally named `scpf`. The `scpf` user owns the
-files that are installed, and is the user under which the Erlang
-node runs.
+named `scpf@host`. For example, if it were running on an AWS host
+`push01-euc1`, it could be named something like
+`scpf@push01-euc1.example.com`.  The Debian installation package
+creates a user, not coincidentally named `scpf`. The `scpf` user
+owns the files that are installed, and is the user under which the
+Erlang node runs.
 
-The `scpf` node is a hierarchy of Erlang applications. Some of them,
-such as `kernel`, `stdlib`, and `mnesia`, are standard Erlang/OTP
-applications. Some of them, such as `webmachine`, are third-party
-open source applications.  The rest of them are Silent Circle
-applications, including:
+Actually, the 'scpf' node really is a collection of Erlang
+applications. Some of them, such as `kernel`, `stdlib`, and
+`mnesia`, are standard Erlang/OTP applications. Some of them, such
+as `webmachine`, are third-party open source applications residing
+on github. The rest of them are Silent Circle applications,
+including:
 
-* `sc_push` - The SCPF application. This includes an Erlang API for
+- `sc_push` - The SCPF application. This includes an Erlang API for
   use by other applications in the same or other Erlang nodes, and a
-  RESTish API for non-Erlang program access.
-* `sc_push_lib` - The SCPF library, which includes `sc_config` and
-  `sc_push_req_mgr`.  Anything in this library may be - and is -
+  REST API for non-Erlang program access.
+- `sc_push_lib` - The SCPF library, which includes `sc_config` and`sc_push_req_mgr`.  Anything in this library may be - and is -
   used by service-specific code in other applications.
-* `apns_erl` - The Apple Push Notification Service (APNS) Erlang
-  API. This is a service-specific application and includes an API
+- `apns_erlv3` - The Apple Push Notification Service (APNS) Erlang
+  API for HTTP/2. This is a service-specific application and includes an API
   that conforms to a standard convention expected by `sc_push`.
-* `gcm_erl` - The Google Cloud Messaging Erlang API. Another
-  service-specific API application.
+- `gcm_erl` - The Google Cloud Messaging Erlang API. Another
+service-specific API application.
 
-## Push Service API Naming Convention
+
+### <a name="Deprecated_services">Deprecated services</a> ###
+
+- `apns_erl` - This supports the old APNS binary service, and is
+  replaced by `apns_erlv3`. It is deprecated and unsupported. It will
+be removed at some point in the future.
+
+
+### <a name="Push_Service_API_Naming_Convention">Push Service API Naming Convention</a> ###
 
 This is a good place to discuss the naming convention used for push
-service APIs. Note that it is a *mandatory* naming convention. The
-format of the name is `$SERVICE-$APP_ID`.  `SERVICE` is `apns` or
-`gcm`. `APP_ID` is the case-sensitive identifier of the
+service APIs. Note that it is a _mandatory_ naming convention. The
+format of the name is `$SERVICE-$APP_ID`.`SERVICE` is `apnsv3` in
+this case. `APP_ID` is the case-sensitive identifier of the
 application and depends on the service; in APNS, this is the APNS
-`app_bundle_id`, for example `com.example.awesomeapp`.  This
+`app_bundle_id`, for example `com.example.someapp`.  This
 is passed to the SCPF service using the variable `app_id`.
 
-## Applications
+---
 
-### SCPF top-level applications
 
-### `sc_push`
+### <a name="Applications">Applications</a> ###
+
+
+### <a name="sc\_push">sc\_push</a> ###
 
 `sc_push` comprises the following components:
 
-* `sc_push_sup` - the top-level supervisor. If any of its child
+- `sc_push_sup` - the top-level supervisor. If any of its child
   processes fail, it will automatically restart it. If the process
   restarts too often within a set time period, the supervisor will
   shut down the `sc_push` application.
-
-* `sc_push_wm_sup` - the webmachine supervisor. This controls the
+- `sc_push_wm_sup` - the webmachine supervisor. This controls the
   processes that make up the REST API, which are run by webmachine,
   a third party Erlang open source application.
-
-* `sc_push_svc_null` - the `null` push service supervisor. Every
-  push service has a top-level supervisor named
-  `sc_push_svc_$SERVICE`. In this case, the `SERVICE` is `null`.
+- `sc_push_svc_null` - the `null` push service supervisor. Every
+  push service has a top-level supervisor named`sc_push_svc_$SERVICE`. In this case, the `SERVICE` is `null`.
   This is the name that is used as the `mod` attribute in the SCPF
-  configuration file.
+  configuration file (__TODO__: document this somewhere).
 
-### `sc_push_lib`
 
-* `sc_push_lib_sup` - the top-level supervisor.
+### <a name="sc\_push\_lib">sc\_push\_lib</a> ###
 
-### `apns_erl`
+- `sc_push_lib_sup` - the top-level supervisor.
+- `sc_push_reg_api` - the push registration API.
+- `sc_push_reg_db` - the push registration database layer.
+- `sc_push_req_mgr` - the push request manager.
 
-* `sc_push_svc_apns` - the `apns` push service supervisor.
 
-* `apns_erl_session_sup` - the `apns` session supervisor. This
-  controls each push session. A push session is an instance of a
-  service configured for a specific iOS or Android client
-  application.  This allows per-application, per-service
-  configuration.
+### <a name="apns\_erlv3">apns\_erlv3</a> ###
 
-### `gcm_erl`
+- `sc_push_svc_apnsv3` - the `apnsv3` push service supervisor.
+- `apns_erlv3_session_sup` - the `apnsv3` session supervisor. This
+controls each push session. A push session is an instance of a
+service configured for a specific client application.  This allows
+per-application, per-service configuration.
 
-* `sc_push_svc_gcm` - the `gcm` push service supervisor.
 
-* `gcm_erl_session_sup` - the `gcm` session supervisor.
+### <a name="gcm\_erl">gcm\_erl</a> ###
 
-* `gcm_req_sched` - The GCM request scheduler. GCM requires
-  exponential backoff and other scheduling rules, controlled by this
-  process.
+- `sc_push_svc_gcm` - the `gcm` push service supervisor.
+- `gcm_erl_session_sup` - the `gcm` session supervisor.
+- `gcm_req_sched` - The GCM request scheduler. GCM requires
+exponential backoff and other scheduling rules, controlled by this
+process.
 
-* `gcm-com.example.awesomeapp` - the `gcm` Silent Phone push
-  service API.  Note that the `APP_ID` part of the name is the
-  Android `AppId`, here being `com.example.awesomeapp`.
 
-# TODO
+#### <a name="Service_configuration">Service configuration</a> ####
 
-- Add an example of how to modify the framework to support another
-  push service.
+Let's say we have an Android app to which we need to push GCM
+notifications, unimaginatively named `someapp`, whose Android app ID is `com.example.someapp`.
+A service configured to push to this app would be named `gcm-com.example.someapp`.
 
-<!--
-vim: ft=markdown ts=4 sts=4 sw=4 tw=68 et
--->
+The basic `gcm` `sys.config` service configuration, without any configured
+services, would look like this:
+
+```
+ [
+  %% Other configurations like sasl and lager
+  %% ...
+  {gcm_erl, [
+             {service, [
+                        {name, gcm},
+                        {mod, sc_push_svc_gcm},
+                        {description, "Google Cloud Messaging Service"}
+                       ]},
+             {sessions, [
+                         %% Sessions go here
+                        ]}
+            ]}
+ ].
+```
+
+To add a GCM session for `com.example.someapp`, you would add its
+configuration to `sys.config` like this:
+
+```
+ [
+  %% Other configurations like sasl and lager
+  %% ...
+  {gcm_erl, [
+             {service, [
+                        {name, gcm},
+                        {mod, sc_push_svc_gcm},
+                        {description, "Google Cloud Messaging Service"}
+                       ]},
+             {sessions, [
+                         [ % session 1
+                          {name, 'gcm-com.example.someapp'},
+                          {config,
+                           [
+                            {api_key, <<"*** put your Google API key here ***">>},
+                            {ssl_opts, [{verify, verify_none}]},
+                            {uri, "https://gcm-http.googleapis.com/gcm/send"},
+                            {max_attempts, 5},
+                            {retry_interval, 1},
+                            {max_req_ttl, 600}
+                           ]}
+                         ] % session 1
+                        ]} % sessions
+            ]}, % gcm_erl
+   %% ...
+ ].
+```
+---
+
+<script>
+// Jump directly to a referenced url given in trailing '[]:...'-notation
+function goto(tag) { parent.document.location.href = url(tag); }
+function url(tag) { var o=document.getElementById(tag); return o ? o.href : '#'+tag; }
+</script>
+
+
+
+## Modules ##
+
+
+<table width="100%" border="0" summary="list of modules">
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/apns_cert.md" class="module">apns_cert</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/apns_erlv3_app.md" class="module">apns_erlv3_app</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/apns_erlv3_session.md" class="module">apns_erlv3_session</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/apns_erlv3_session_sup.md" class="module">apns_erlv3_session_sup</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/apns_json.md" class="module">apns_json</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/apns_jwt.md" class="module">apns_jwt</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/apns_lib.md" class="module">apns_lib</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/apns_lib_http2.md" class="module">apns_lib_http2</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/apns_recs.md" class="module">apns_recs</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/apns_types.md" class="module">apns_types</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/gcm_erl.md" class="module">gcm_erl</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/gcm_erl_app.md" class="module">gcm_erl_app</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/gcm_erl_session.md" class="module">gcm_erl_session</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/gcm_erl_session_sup.md" class="module">gcm_erl_session_sup</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/gcm_json.md" class="module">gcm_json</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/gcm_req_sched.md" class="module">gcm_req_sched</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_config.md" class="module">sc_config</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_priority_queue.md" class="module">sc_priority_queue</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push.md" class="module">sc_push</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_app.md" class="module">sc_push_app</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_lib.md" class="module">sc_push_lib</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_lib_app.md" class="module">sc_push_lib_app</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_lib_sup.md" class="module">sc_push_lib_sup</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_reg_api.md" class="module">sc_push_reg_api</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_reg_db.md" class="module">sc_push_reg_db</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_reg_resource.md" class="module">sc_push_reg_resource</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_reg_wm_device.md" class="module">sc_push_reg_wm_device</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_reg_wm_service.md" class="module">sc_push_reg_wm_service</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_reg_wm_tag.md" class="module">sc_push_reg_wm_tag</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_req_mgr.md" class="module">sc_push_req_mgr</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_sup.md" class="module">sc_push_sup</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_svc_apnsv3.md" class="module">sc_push_svc_apnsv3</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_svc_gcm.md" class="module">sc_push_svc_gcm</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_svc_null.md" class="module">sc_push_svc_null</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_svc_null_srv.md" class="module">sc_push_svc_null_srv</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_top.md" class="module">sc_push_top</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_wm_common.md" class="module">sc_push_wm_common</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_wm_helper.md" class="module">sc_push_wm_helper</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_wm_send_device.md" class="module">sc_push_wm_send_device</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_wm_send_svc_appid_tok.md" class="module">sc_push_wm_send_svc_appid_tok</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_wm_send_svc_tok.md" class="module">sc_push_wm_send_svc_tok</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_wm_send_tag.md" class="module">sc_push_wm_send_tag</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_wm_sup.md" class="module">sc_push_wm_sup</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_types.md" class="module">sc_types</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_util.md" class="module">sc_util</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_util_app.md" class="module">sc_util_app</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_util_srv.md" class="module">sc_util_srv</a></td></tr></table>
+

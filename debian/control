@@ -3,14 +3,16 @@ Section: net
 Priority: extra
 Maintainer: Edwin Fine <efine@silentcircle.com>
 Build-Depends:
+    curl,
     dh-systemd (>= 1.5),
     debhelper (>= 9),
     quilt,
-    erlang (>= 1:17.3~),
-    erlang-dev (>= 1:17.3~),
-    git (>= 1.7~)
+    erlang (>= 1:18.3~),
+    erlang-dev (>= 1:18.3~),
+    git (>= 1.7~),
+    pandoc (>= 1.12.4~)
 Standards-Version: 3.9.5
-Homepage: http://silentcircle.com/
+Homepage: https://silentcircle.com/
 
 Package: scpf
 Architecture: any

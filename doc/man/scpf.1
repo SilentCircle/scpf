@@ -1,76 +1,233 @@
-.\"scpf is copyright Silent Circle LLC
-.Dd 2016 Silent Circle LLC
-.Dt scpf(1) "" "Silent Circle Push Framework"
-.\".Dt scpf 1
-.Os UNIX
-.Sh NAME
-.Nm scpf
-.Nd Silent Circle Push Framework
-.Sh SYNOPSIS
-.Nm
-.Op start
-.Op start_boot <file>
-.Op foreground
-.Op version
-.Op erts_vsn
-.Op console
-.Op attach
-.Op remote_console
-.Sh DESCRIPTION
-scpf is a general push notification service provider written in Erlang.
-.Sh OPTIONS
-The \fBscpf\fR command controls the main server process.
-.Bl -tag -width "1234567890123" -compact
-.Pp
-.It start
-Starts scpf node background process; outputs message "Node is already running!"
-when attempting to start an already running node.
-.Pp
-.It start_boot <file>
-Starts SCPF node using boot script \fB<file>\fR.
-.Pp
-.It foreground
-Starts SCPF in foreground mode. This is useful for running under a supervisor
-like systemd, or debugging.
-.Pp
-.It version
-Shows the SCPF version from /usr/lib/scpf/releases/start_erl.data.
-.Pp
-.It erts-_vsn
-Shows the ERTS version from /usr/lib/scpf/releases/start_erl.data.
-.Pp
-.It console
-Starts scpf as a foreground process with access to the Erlang console messages
-and shell; outputs "Node is already running - use 'scpf attach' instead" when
-node is already running as a background process.
-.Pp
-.It stop
-Stops scpf node; outputs "ok" on success or warnings about the node not
-responding to pings when node is not responding or not running.
-If attached to scpf on the Erlang shell, stop like this example:
-.Pp
-(scpf@example.com)1> q().
-.Pp
-.It restart
-Stops and starts scpf node while maintaining current Erlang virtual machine;
-outputs "ok" on success or warnings about node not responding to pings when
-node is not responding or not running.
-.Pp
-.It reboot
+.TH SCPF 1 "July 11, 2016" "scpf 2.0.0"
+.SH NAME
+scpf - general push service provider written in Erlang.
+.SH Synopsis
+.PP
+\f[C]scpf\f[] [\f[I]command\f[]]
+.SH Description
+.PP
+scpf is a general push service provider written in Erlang.
+.SH Examples
+.TP
+.B \f[C]scpf\ start\f[]
+Starts \f[C]scpf\f[] in the background as a daemon.
+.RS
+.RE
+.TP
+.B \f[C]scpf\ status\f[]
+Attempts to ping \f[C]scpf\f[]\[aq]s Erlang node.
+.RS
+.RE
+.TP
+.B \f[C]scpf\ foreground\f[]
+Starts \f[B]scpf\f[] in the foreground, suitable for working with
+supervisors like systemd.
+.RS
+.RE
+.TP
+.B \f[C]scpf\ version\f[]
+Shows the release version string for \f[C]scpf\f[].
+This is not a fully reliable way of getting the release version, because
+it uses the contents of an installed file,
+\f[I]/usr/lib/scpf/releases/start\f[]erl.data_.
+.RS
+.RE
+.TP
+.B \f[C]scpf\ rpcterms\ application\ which_applications\f[]
+Displays, in Erlang term format, which applications are running in the
+node.
+.RS
+.RE
+.TP
+.B \f[C]scpf\ rpcterms\ io\ format\ \[aq]"This\ is\ a\ string~n"\[aq]\f[]
+Prints "This is a string" on the console, followed by "ok".
+.RS
+.RE
+.TP
+.B \f[C]scpf\ rpcterms\ io\ format\ \[aq]"Int:\ ~B,\ Atom:\ ~p,\ Str:\ ~s~n"\[aq]\ \[aq][10,foo,"Hi"]\[aq]\f[]
+This is an example of giving multiple arguments to \f[C]rpcterms\f[].
+It is equivalent to
+\f[C]io:format("Int:\ ~B,\ Atom:\ ~p,\ Str:\ ~s~n",\ [10,foo,"Hi"]).\f[]
+.RS
+.RE
+.SH Commands
+.PP
+The \f[C]scpf\f[] command controls the main server process.
+Note that interactions with \f[C]systemd\f[] may cause unexpected
+behavior, such as automatically restarting \f[C]scpf\f[] immediately
+after \f[C]scpf\ stop\f[] has been called.
+.TP
+.B \f[C]attach\f[]
+Attaches to the \f[C]scpf\f[] process via a pipe.
+This will only work if \f[C]scpf\f[] was started in a background mode.
+.RS
+.RE
+.TP
+.B \f[C]backup\f[] \f[I]file\f[]
+Backs up \f[C]scpf\f[] Mnesia databases in running node to
+\f[I]file\f[].
+.RS
+.RE
+.TP
+.B \f[C]console\f[]
+Starts scpf as a foreground process with access to the Erlang console
+messages and shell; outputs "Node is already running!" when node is
+already running as a background process.
+.RS
+.PP
+This command is equivalent to \f[C]console_boot\ scpf.boot\f[].
+.RE
+.TP
+.B \f[C]console_boot\f[] \f[I]boot\-file\f[]
+Starts \f[C]scpf\f[] in console mode, using the Erlang boot file
+specified in \f[I]file\f[].
+This command drops the caller into an Erlang shell on the system booted
+with \f[I]boot\-file\f[].
+Exiting the shell shuts down the system.
+.RS
+.RE
+.TP
+.B \f[C]console_clean\f[]
+Starts a clean Erlang VM in console mode, using the Erlang boot file
+\f[C]start_clean.boot\f[].
+.RS
+.RE
+.TP
+.B \f[C]erts_vsn\f[]
+Displays the version of the Erlang run\-time system (erts) that scpf
+will be booted into.
+scpf need not be running for this command to work.
+.RS
+.RE
+.TP
+.B \f[C]downgrade\f[] \f[I]package\-base\-name\f[]
+Synonym for \f[B]install\f[].
+.RS
+.RE
+.TP
+.B \f[C]escript\f[] \f[I]file\f[]
+Runs escript \f[I]file\f[] in the node\[aq]s environment.
+.RS
+.RE
+.TP
+.B \f[C]eval\f[] \f[I]expression\f[]
+Evaluates Erlang \f[I]expression\f[] in the running node.
+.RS
+.RE
+.TP
+.B \f[C]foreground\f[]
+Starts up the release in the foreground suitable for runit, systemctl,
+and other supervision tools.
+.RS
+.RE
+.TP
+.B \f[C]install\f[] \f[I]package\-base\-name\f[]
+Runs \f[C]install_upgrade.escript\ install\f[] on
+\f[C]_package\-base\-name_\f[] in the running node.
+.RS
+.PP
+Installs, upgrades, or downgrades the scpf release depending on whether
+or not the release in the package tarball is absent, newer, or older,
+respectively.
+The tarball is \f[C]_package\-base\-name_.tar.gz\f[] in the current
+directory.
+.RE
+.TP
+.B \f[C]pid\f[]
+Displays the pid of the running scpf node.
+.RS
+.RE
+.TP
+.B \f[C]ping\f[]
+Pings scpf node as a basic test for node liveness; outputs "pong" on
+success or warnings about the node not responding to pings.
+.RS
+.RE
+.TP
+.B \f[C]reboot\f[]
 Stops and starts scpf node while also exiting the current Erlang virtual
-machine; outputs "ok" on success or warnings about node not responding to pings
-when node is not responding or not running.
-.Pp
-.It ping
-Pings scpf node as a basic test for node liveness; outputs "pong" on success or
-warnings about the not not responding to pings when node is not responding or
-not running.
-.Pp
-.It attach
-Attach to a running scpf process with access to the Erlang console messages and
-shell.
-.El
-.Sh AUTHORS
-Edwin Fine efine@silentcircle.com
-.An https://silentcircle.com
-
+machine; outputs "ok" on success or warnings about node not responding
+to pings.
+.RS
+.RE
+.TP
+.B \f[C]remote_console\f[]
+Starts a remote console on a background scpf node; outputs "Node is not
+running!" if unable to reach the node.
+.RS
+.RE
+.TP
+.B \f[C]restart\f[]
+Stops and starts scpf node while maintaining current Erlang virtual
+machine; outputs "ok" on success or warnings about node not responding
+to pings.
+.RS
+.RE
+.TP
+.B \f[C]rpc\f[]
+Executes RPC using \f[I]module\f[], \f[I]function\f[], and \f[I]args\f[]
+on running node.
+This currently only works when args are omitted.
+.RS
+.RE
+.TP
+.B \f[C]rpcterms\f[] \f[I]module\f[] \f[I]function\f[] [\f[I]args\f[]]
+Executes RPC using \f[I]module\f[], \f[I]function\f[], and \f[I]args\f[]
+on running node, and displays the result in Erlang term format.
+The optional \f[I]args\f[] parameter is a sequence of one or more
+arguments.
+Each argument must be a separate command\-line parameter.
+The arguments are parsed into Erlang, so eahc argument must be valid
+Erlang syntax.
+This will probably require escaping \f[I]args\f[] for the shell.
+.RS
+.RE
+.TP
+.B \f[C]start\f[]
+Starts scpf node as a background process; outputs message "Node is
+already running!" when attempting to start an already running node.
+.RS
+.RE
+.TP
+.B \f[C]status\f[]
+Synonym for \f[B]ping\f[].
+.RS
+.RE
+.TP
+.B \f[C]start_boot\f[] \f[I]boot\-file\f[]
+Starts scpf node as a background process, using \f[I]boot\-file\f[].
+Outputs message "Node is already running!" when attempting to start an
+already running node.
+.RS
+.RE
+.TP
+.B \f[C]stop\f[]
+Stops scpf node; outputs "ok" on success or warnings about the node not
+responding to pings.
+If attached to scpf on the Erlang shell, this example will shut down
+scpf in that node:
+.RS
+.PP
+\f[C](scpf\@example.com)1>\ q().\f[]
+.PP
+If in a remote Erlang shell attached to scpf, this example will
+disconnect from the shell without shutting down scpf:
+.PP
+\f[C](scpf\@example.com)1>\ _CTRL\-g_q_ENTER_\f[]
+.RE
+.TP
+.B \f[C]upgrade\f[] \f[I]package\-base\-name\f[]
+Synonym for \f[B]install\f[].
+.RS
+.RE
+.TP
+.B \f[C]version\f[]
+Displays the scpf version string.
+scpf need not be running.
+.RS
+.RE
+.SH Authors
+.PP
+© 2012\-2016 Silent Circle LLC (https://silentcircle.com)
+.PP
+Edwin Fine (efine\@silentcircle.com)

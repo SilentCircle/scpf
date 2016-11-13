@@ -1,0 +1,207 @@
+% SCPF User's Guide
+% Edwin Fine
+% July 11, 2016
+
+Synopsis
+========
+
+`scpf` [*command*]
+
+Description
+===========
+
+scpf is a general push service provider written in Erlang.
+
+Examples
+========
+
+`scpf start`
+
+:   Starts `scpf` in the background as a daemon.
+
+`scpf status`
+
+:   Attempts to ping `scpf`'s Erlang node.
+
+`scpf foreground`
+
+:   Starts **scpf** in the foreground, suitable for working with
+    supervisors like systemd.
+
+`scpf version`
+
+:   Shows the release version string for `scpf`. This is not a fully
+    reliable way of getting the release version, because it uses the
+    contents of an installed file,
+    _/usr/lib/scpf/releases/start_erl.data_.
+
+`scpf rpcterms application which_applications`
+
+:   Displays, in Erlang term format, which applications are running
+    in the node.
+
+`scpf rpcterms io format '"This is a string~n"'`
+
+:   Prints "This is a string" on the console, followed by "ok".
+
+`scpf rpcterms io format '"Int: ~B, Atom: ~p, Str: ~s~n"' '[10,foo,"Hi"]'`
+
+:   This is an example of giving multiple arguments to `rpcterms`.
+    It is equivalent to `io:format("Int: ~B, Atom: ~p, Str: ~s~n", [10,foo,"Hi"]).`
+
+Commands
+========
+
+The `scpf` command controls the main server process.  Note that
+interactions with `systemd` may cause unexpected behavior, such as
+automatically restarting `scpf` immediately after `scpf stop` has
+been called.
+
+`attach`
+
+:   Attaches to the `scpf` process via a pipe. This will only work
+    if `scpf` was started in a background mode.
+
+`backup` _file_
+
+:   Backs up `scpf` Mnesia databases in running node to _file_.
+
+`console`
+
+:   Starts scpf as a foreground process with access to the Erlang console
+    messages and shell; outputs "Node is already running!" when node is
+    already running as a background process.
+
+    This command is equivalent to `console_boot scpf.boot`.
+
+`console_boot` _boot-file_
+
+:   Starts `scpf` in console mode, using the Erlang boot file
+    specified in _file_. This command drops the caller into an Erlang
+    shell on the system booted with _boot-file_. Exiting the shell
+    shuts down the system.
+
+`console_clean`
+
+:   Starts a clean Erlang VM in console mode, using the Erlang boot
+    file `start_clean.boot`.
+
+`erts_vsn`
+
+:   Displays the version of the Erlang run-time system (erts) that scpf
+    will be booted into. scpf need not be running for this command to
+    work.
+
+`downgrade` _package-base-name_
+
+:   Synonym for **install**.
+
+`escript` _file_
+
+:   Runs escript _file_ in the node's environment.
+
+`eval` _expression_
+
+:   Evaluates Erlang _expression_ in the running node.
+
+`foreground`
+
+:   Starts up the release in the foreground suitable for runit,
+    systemctl, and other supervision tools.
+
+`install` _package-base-name_
+
+:   Runs `install_upgrade.escript install` on `_package-base-name_` in
+    the running node.
+
+    Installs, upgrades, or downgrades the scpf release depending on
+    whether or not the release in the package tarball is absent, newer,
+    or older, respectively. The tarball is `_package-base-name_.tar.gz`
+    in the current directory.
+
+`pid`
+
+:   Displays the pid of the running scpf node.
+
+`ping`
+
+:   Pings scpf node as a basic test for node liveness; outputs "pong" on
+    success or warnings about the node not responding to pings.
+
+`reboot`
+
+:   Stops and starts scpf node while also exiting the current Erlang
+    virtual machine; outputs "ok" on success or warnings about node not
+    responding to pings.
+
+`remote_console`
+
+:   Starts a remote console on a background scpf node; outputs "Node is
+    not running!" if unable to reach the node.
+
+`restart`
+
+:   Stops and starts scpf node while maintaining current Erlang virtual
+    machine; outputs "ok" on success or warnings about node not
+    responding to pings.
+
+`rpc`
+
+:   Executes RPC using _module_, _function_, and _args_ on running
+    node. This currently only works when args are omitted.
+
+`rpcterms` _module_ _function_ [_args_]
+
+:   Executes RPC using _module_, _function_, and _args_ on running
+    node, and displays the result in Erlang term format. The optional
+    _args_ parameter is a sequence of one or more arguments. Each
+    argument must be a separate command-line parameter. The arguments
+    are parsed into Erlang, so eahc argument must be valid Erlang
+    syntax. This will probably require escaping _args_ for the shell.
+
+`start`
+
+:   Starts scpf node as a background process; outputs message "Node is
+    already running!" when attempting to start an already running node.
+
+`status`
+
+:   Synonym for **ping**.
+
+`start_boot` _boot-file_
+
+:   Starts scpf node as a background process, using _boot-file_.
+    Outputs message "Node is already running!" when attempting to start
+    an already running node.
+
+`stop`
+
+:   Stops scpf node; outputs "ok" on success or warnings about the node
+    not responding to pings.  If attached to scpf on the Erlang shell,
+    this example will shut down scpf in that node:
+
+    `(scpf@example.com)1> q().`
+
+    If in a remote Erlang shell attached to scpf, this example will
+    disconnect from the shell without shutting down scpf:
+
+    `(scpf@example.com)1> _CTRL-g_q_ENTER_`
+
+`upgrade` _package-base-name_
+
+:   Synonym for **install**.
+
+`version`
+
+:   Displays the scpf version string. scpf need not be running.
+
+Authors
+=======
+
+© 2012-2016 Silent Circle LLC (https://silentcircle.com)
+
+Edwin Fine (efine@silentcircle.com)
+
+<!--
+vim: filetype=nroff syntax=on ts=4 sts=4 sw=4 et tw=68
+-->

@@ -4,16 +4,9 @@
         {vsn, {cmd, "echo `cat APP_VERSION`"}},
         {registered, []},
         {applications, [
-                kernel,
-                stdlib,
-                sasl,
-                crypto,
-                public_key,
-                ssl,
-                mnesia,
-                lager,
                 sc_push,
                 apns_erl,
+                apns_erlv3,
                 gcm_erl
             ]},
         {env, []}

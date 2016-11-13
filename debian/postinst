@@ -7,7 +7,7 @@ set -e
 
 # create scpf group
 if ! getent group scpf >/dev/null; then
-        addgroup --system scpf 
+        addgroup --system scpf
 fi
 
 # create scpf user
@@ -21,8 +21,12 @@ chown -R scpf:scpf /var/lib/scpf
 chown -R scpf:scpf /var/run/scpf
 chown -R scpf:scpf /var/log/scpf
 chown -R scpf:scpf /etc/scpf/certs
-chmod 0755 /var/run/scpf /etc/scpf 
-chmod 0755 /etc/scpf/certs 
+chmod 0755 /var/run/scpf /etc/scpf
+chmod 0755 /etc/scpf/certs
+
+# scpf.links and dh_link don't do what we want
+#rm -f /usr/sbin/scpf
+#ln -sf /usr/lib/scpf/bin/scpf /usr/sbin/scpf
 
 case "$1" in
     configure)

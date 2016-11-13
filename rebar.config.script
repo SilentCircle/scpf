@@ -1,0 +1,359 @@
+%% If the environment variable SCPF_OVERRIDE_REL exists, it is expected to be set to
+%% a valid profile name in rebar.config. If that profile name doesn't exist,
+%% CONFIG will remain unchanged.
+%%
+%% If the profile does exist, replace the version in the relx release tuple
+%% with the version in APP_VERSION, but only if semantic versioning (semver) is
+%% being used. This requires a bit of legerdemain because the default release
+%% tuple must be used, and overridden by the profile-specific release tuple if one
+%% exists.
+
+%% REMARKS
+%%
+%% Sorry for all the weird functions named like AndThen and OrElse. I've been
+%% playing with Rust and Haskell, and, well...
+
+%% If EnvVar exists and has some content, call UserFun(Content, UserArg)
+%% and return its result.
+%% Otherwise return UserArg unchanged.
+RunIfEnvVar =
+    fun(EnvVar, UserFun, UserArg) ->
+            case os:getenv(EnvVar) of
+                false  -> UserArg;
+                []     -> UserArg;
+                EnvVal -> UserFun(EnvVal, UserArg)
+            end
+    end.
+
+Dbg = RunIfEnvVar("REBAR_EXTRA_DBG",
+                  fun(_EnvVal, _Arg) -> true end,
+                  false).
+
+DbgDo = fun(F) when is_function(F, 0) ->
+                Dbg andalso F()
+        end.
+
+Dmsg = fun(Fmt, Args) ->
+               DbgDo(fun() ->
+                             io:format(standard_error, Fmt, Args),
+                             true
+                     end)
+       end.
+
+%% Expect {'Some', X} and return X.
+Some = fun({'Some', X}) ->
+               X;
+          ('None') ->
+               erlang:error("Expected Some, got None")
+       end.
+
+%% Lift value into Some monad. If already monad, leave unchanged.
+Return = fun({'Some', _} = X) -> X;
+            ('None')          -> 'None';
+            (undefined)       -> 'None';
+            (Val)             -> {'Some', Val}
+         end.
+
+%% Return Fun(Val) if passed {'Some', Val}, else return 'None'.
+AndThen = fun({'Some', Val}, Fun) when is_function(Fun, 1) -> Fun(Val);
+             ('None', _) -> 'None'
+          end.
+
+%% Return Fun() if passed 'None', else return {'Some', Val}.
+OrElse = fun({'Some', _Val}=S, _) -> S;
+             ('None', Fun) when is_function(Fun, 0) -> Fun()
+         end.
+
+%% Return X unchanged.
+Identity = fun(X) -> X end.
+
+GetVal = fun(K, PL) ->
+                 Return(proplists:get_value(K, PL))
+         end.
+
+GetRel = fun(PL) ->
+                 Res = case lists:keysearch(release, 1, PL) of
+                           {value, V} -> V;
+                           _ -> undefined
+                       end,
+                 Return(Res)
+         end.
+
+SetVal = fun(K, Tuple, PL) -> Return(lists:keystore(K, 1, PL, Tuple)) end.
+
+SetProp = fun(K, V, PL) -> SetVal(K, {K, V}, PL) end.
+
+%% Get app version from file or return default.
+APP_VERSION =
+    fun(DefVsn) ->
+            case file:read_file("APP_VERSION") of
+                {ok, Vsn} ->
+                    string:strip(binary_to_list(Vsn), right, $\n);
+                _ ->
+                    DefVsn
+            end
+    end.
+
+MaybeAppVersion = fun() -> Return(APP_VERSION(undefined)) end.
+
+%% Replace release if semver is the version. Leave as semver if APP_VERSION
+%% cannot be read.
+ReplaceRel =
+    fun(R) ->
+             R1 = fun({release, {RelName, semver}, Apps}) ->
+                          {release, {RelName, APP_VERSION(semver)}, Apps};
+                     (_) ->
+                          undefined
+                  end,
+             Return(R1(R))
+     end.
+
+%% Replace the relx config if it's there, it contains a release tuple, and
+%% the tuple was semantically versioned.
+ReplaceRelx =
+    fun(PL) ->
+            AndThen(GetVal(relx, PL),
+                    fun(Relx0) ->
+                            AndThen(GetRel(Relx0),
+                                    fun(Rel0) ->
+                                            AndThen(ReplaceRel(Rel0),
+                                                    fun({release,_,_}=Rel) ->
+                                                            Relx = SetVal(release, Rel, Relx0),
+                                                            SetProp(relx, Some(Relx), PL)
+                                                    end)
+                                    end)
+                    end)
+    end.
+
+ReplOverrideProfile =
+    fun(Profiles, Vsn) ->
+            AndThen(GetVal(Vsn, Profiles),
+                    fun(Prof) ->
+                            AndThen(ReplaceRelx(Prof),
+                                    fun(NewProf) ->
+                                            SetProp(Vsn, Profiles, NewProf)
+                                    end)
+                    end)
+    end.
+
+ReplOverrideVsn =
+    fun(C0, Vsn) ->
+            AndThen(GetVal(profiles, C0),
+                    fun(Profiles) ->
+                            AndThen(ReplOverrideProfile(Profiles, Vsn),
+                                    fun(C) ->
+                                            AndThen(ReplaceRelx(C), Return)
+                                    end)
+                    end)
+    end.
+
+GetCfg =
+    fun(Key, Config, Default) ->
+          case lists:keyfind(Key, 1, Config) of
+              false ->
+                  Default;
+              {Key, PL} ->
+                  PL
+          end
+    end.
+
+KeyStore = fun(Key, Config, NewVal) ->
+               lists:keystore(Key, 1, Config, {Key, NewVal})
+          end.
+
+GetEDocOpts = fun(Config) -> GetCfg(edoc_opts, Config, []) end.
+GetMacros = fun(EDocOpts) -> proplists:get_value(def, EDocOpts, []) end.
+SetMacros = fun(NewVal, EDocOpts) -> KeyStore(def, EDocOpts, NewVal) end.
+AddMacro = fun(NewDef, EDocOpts) ->
+                   NewMacros = case GetMacros(EDocOpts) of
+                                   Macros when is_list(Macros) ->
+                                       [NewDef | Macros -- [NewDef]];
+                                   {_Name, _Str} = Def ->
+                                       [NewDef | [Def] -- [NewDef]]
+                               end,
+                   SetMacros(NewMacros, EDocOpts)
+           end.
+
+GetPreHooks = fun(Config) -> GetCfg(pre_hooks, Config, []) end.
+SetPreHooks = fun(PreHooks, Config) ->
+                      KeyStore(pre_hooks, Config, PreHooks)
+              end.
+GetCTHook = fun(PreHooks) -> GetCfg(ct, PreHooks, undefined) end.
+SetCTHook = fun(CTHook, PreHooks) ->
+                    KeyStore(ct, PreHooks, CTHook)
+            end.
+GetCTOpts = fun(Config) -> GetCfg(ct_opts, Config, []) end.
+SetCTOpts = fun(NewVal, Config) -> KeyStore(ct_opts, Config, NewVal) end.
+GetCTSpec = fun(CTOpts) -> GetCfg(spec, CTOpts, undefined) end.
+SetCTSpec = fun(NewVal, CTOpts) -> KeyStore(spec, CTOpts, NewVal) end.
+
+GetFullHostname = fun() -> net_adm:localhost() end.
+
+MakeLongNodeS = fun(NodeName, HostName) ->
+                        NodeName ++ "@" ++ HostName
+                end.
+
+ConfigureCTOpts =
+     fun(Config) ->
+             CTOpts0 = GetCTOpts(Config),
+             CTSpec0 = case GetCTSpec(CTOpts0) of
+                          undefined ->
+                              "scpf.test.spec";
+                          S ->
+                              S
+                      end,
+             CTOpts = SetCTSpec(CTSpec0, CTOpts0),
+             SetCTOpts(CTOpts, Config)
+     end.
+
+%% This function rewrites {pre_hooks, [{ct, "./pre_common_test_hook.sh"}]}.
+%%
+%% pre_common_test_hook.sh needs two parameters, one of which is
+%% a long node name. Since the host name cannot be known in advance,
+%% this function synthesizes the full node name from the host name
+%% and the hard-coded string "ct1_scpf". It then replaces the ct pre_hooks
+%% part of rebar.config that calls
+%% pre_common_test_hook.sh with a call
+%%
+%% ./pre_common_test_hook.sh <nodename> <ct-spec-file-name>
+%%
+%% Note that it will only supersede the ct pre_hook if
+%%
+%% 1. The pre_hook is not there at all, or
+%% 2. The pre_hook is there, but consists only of the literal string
+%%    "./pre_common_test_hook.sh"/
+%% It will fail if there is no ct_spec!
+ConfigurePreHooks =
+    fun(Config0) ->
+            Config = ConfigureCTOpts(Config0),
+            CTSpec = GetCTSpec(GetCTOpts(Config)),
+            true = (CTSpec /= undefined),
+            Script = "./pre_common_test_hook.sh",
+            PreHooks = GetPreHooks(Config),
+            HostN = GetFullHostname(),
+            NodeName = MakeLongNodeS("ct1_scpf", HostN),
+            CTHook = case GetCTHook(PreHooks) of
+                         S when S == undefined orelse
+                                S == Script ->
+                             string:join([Script,
+                                          NodeName,
+                                          CTSpec], " ");
+                         S ->
+                             S
+                     end,
+            PreHooks1 = SetCTHook(CTHook, PreHooks),
+            Return(SetPreHooks(PreHooks1, Config))
+    end.
+
+%% Return {'Some', 'release'} if env var SCPF_OVERRIDE_REL exists, using
+%% the value of the env var converted to atom as the release.
+%% Otherwise return 'None'.
+SCPF_OVERRIDE_REL =
+     fun() ->
+             Return(case os:getenv("SCPF_OVERRIDE_REL") of
+                        false -> undefined;
+                        Str   -> list_to_atom(Str)
+                    end)
+     end.
+
+%% Return {'Some', NewConfig} if SCPF_OVERRIDE_REL env var exists, 'None'
+%% otherwise.
+MaybeOverride =
+     fun(Cfg) ->
+             AndThen(SCPF_OVERRIDE_REL(),
+                     fun(Vsn) when is_atom(Vsn) ->
+                             OrElse(ReplOverrideVsn(Cfg, Vsn),
+                                    fun() ->
+                                            OrElse(ReplaceRelx(Cfg),
+                                                   fun() -> Identity(Cfg) end)
+                                    end)
+                     end)
+     end.
+
+EDOWN_TARGET =
+    fun() ->
+             Return(case os:getenv("EDOWN_TARGET") of
+                        false -> undefined;
+                        Str   -> Str
+                    end)
+     end.
+
+%% Ensure edown target is valid
+ValTarget = fun(Target) ->
+                    ATarget = list_to_atom(Target),
+                    lists:member(ATarget, ['github', 'gitlab', 'stash'])
+                    orelse throw({bad_edown_target, Target}),
+                    ATarget
+            end.
+
+%% If env var is defined, replace edown_target with its contents.
+%% Return {'Some', NewCfg} if changed, 'None' otherwise.
+ConfigEdownTarget =
+    fun(Cfg) ->
+            AndThen(EDOWN_TARGET(),
+                    fun(Target) ->
+                            EDocOpts = KeyStore(edown_target,
+                                                GetEDocOpts(Cfg),
+                                                ValTarget(Target)),
+                            Return(KeyStore(edoc_opts, Cfg, EDocOpts))
+                    end)
+    end.
+
+EDOWN_TOP_LEVEL_README_URL =
+    fun() ->
+            Return(case os:getenv("EDOWN_TOP_LEVEL_README_URL") of
+                       E when E == false orelse E == [] ->
+                           undefined;
+                       URL ->
+                           URL
+                   end)
+    end.
+
+%% If env var is defined, replace top_level_readme with its contents
+%% and return {'Some', NewCfg}, else return 'None'.
+ConfigEdownUrl =
+    fun(Cfg) ->
+            AndThen(EDOWN_TOP_LEVEL_README_URL(),
+                    fun(URL) ->
+                            EDocOpts = KeyStore(top_level_readme,
+                                       GetEDocOpts(Cfg),
+                                       {"./README.md", URL}),
+                            Return(KeyStore(edoc_opts, Cfg, EDocOpts))
+                    end)
+    end.
+
+%% Override edoc '@version' macro value to be current APP_VERSION.
+ConfigEdocVsn =
+    fun(Cfg) ->
+            AndThen(MaybeAppVersion(),
+                    fun(Vsn) when is_list(Vsn) ->
+                            Return(KeyStore(edoc_opts, Cfg,
+                                            AddMacro({version, Vsn},
+                                                     GetEDocOpts(Cfg))))
+                    end)
+    end.
+
+%% Apply chain of modifications to CONFIG
+{CONFIG1, _} = lists:foldl(
+                 fun(ModCfg, {Cfg, N}) when is_function(ModCfg, 1) ->
+                         Dmsg("Old Cfg ~B: ~p~n", [N, Cfg]),
+                         Acc = case ModCfg(Cfg) of
+                                   {'Some', NewCfg} ->
+                                       Dmsg("New Cfg ~B: ~p~n", [N, NewCfg]),
+                                       NewCfg;
+                                   'None' ->
+                                       Cfg
+                               end,
+                         {Acc, N + 1}
+                 end, {CONFIG, 1}, [
+                                    ConfigurePreHooks,
+                                    MaybeOverride,
+                                    ConfigEdownTarget,
+                                    ConfigEdownUrl,
+                                    ConfigEdocVsn
+                                   ]
+                ).
+
+CONFIG1.
+
+

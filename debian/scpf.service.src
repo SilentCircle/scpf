@@ -6,7 +6,6 @@ After=network-online.target
 Wants=network-online.target
 
 [Service]
-Environment=ERTS_PATH=/usr/lib/scpf/{{ erts_vsn }}/bin RUNNER_LOG_DIR=/var/log/scpf RUNNER_USR_DIR=/usr
 WorkingDirectory=/var/lib/scpf
 User=scpf
 Group=scpf

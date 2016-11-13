@@ -1,6 +1,8 @@
 #!/bin/bash
 
-find deps -type d -name ".git" |
+PROFILE=$1; shift
+
+find _build/${PROFILE:-default}/lib -type d -name ".git" |
 while read gd; do
 	wd="$(dirname $gd)"
 	app="$(basename $wd)"

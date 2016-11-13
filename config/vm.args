@@ -1,0 +1,29 @@
+## Name of the node
+-name {{release_name}}@127.0.0.1
+
+## Cookie for distributed erlang
+-setcookie {{release_name}}
+
+## Heartbeat management; auto-restarts VM if it dies or becomes unresponsive
+## (Disabled by default..use with caution!)
+##-heart
+
+## Enable kernel poll and a few async threads
++K true
++A 5
+
+## Treat error_logger warnings as warnings
++W w
+
+## Increase number of concurrent ports/sockets
+-env ERL_MAX_PORTS 4096
+
+-env WEBMACHINE_IP ::
+-env WEBMACHINE_PORT 8765
+
+## Tweak GC to run more often
+##-env ERL_FULLSWEEP_AFTER 10
+
+## Set firewall window
+-kernel inet_dist_listen_min 40000 inet_dist_listen_max 40999
+-mnesia dir "{{ mnesia_dir }}"

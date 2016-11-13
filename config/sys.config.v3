@@ -1,0 +1,173 @@
+[
+ %% SASL config
+ {sasl, [
+         {sasl_error_logger, {file, "/var/log/scpf/sasl-error.log"}},
+         {errlog_type, error},
+         {error_logger_mf_dir, "/var/log/scpf/sasl"},      % Log directory
+         {error_logger_mf_maxbytes, 10485760},   % 10 MB max file size
+         {error_logger_mf_maxfiles, 5}           % 5 files max
+        ]},
+
+ {sc_push, [
+            {services, [
+                        [
+                         {name, 'null'},
+                         {mod, 'sc_push_svc_null'},
+                         {description, "Null Push Service"},
+                         {sessions, [
+                                     [
+                                      {name, 'null-com.example.SomeApp'},
+                                      {mod, sc_push_svc_null_srv},
+                                      {config, []}
+                                     ]
+                                    ]
+                         }
+                        ]
+                       ]
+            }
+           ]
+ },
+
+ {apns_erl, [
+             {service, [
+                        {name, apns},
+                        {mod, sc_push_svc_apns},
+                        {description, "Obsolete and deprecated APNS Binary Push Service"}
+                       ]},
+
+             {sessions, []}
+            ]
+ },
+
+ {apns_erlv3, [
+               {service, [
+                          {name, apnsv3},
+                          {mod, sc_push_svc_apnsv3},
+                          {description, "APNS HTTP/2 Push Service"}
+                         ]},
+
+               {sessions, [
+                           %%
+                           [
+                            {name, 'apnsv3-com.example.SomeApp.voip'},
+                            {config, [
+                                      {apns_env, prod},
+                                      {host, <<"api.push.apple.com">>},
+                                      {port, 443},
+                                      {bundle_seed_id, <<"com.example.SomeApp">>},
+                                      {apns_topic, <<"com.example.SomeApp.voip">>},
+                                      {disable_apns_cert_validation, true}, % TODO: fix this
+                                      {ssl_opts, [
+                                                  {cacertfile, "/etc/ssl/certs/ca-certificates.crt"},
+                                                  {certfile, "/etc/scpf/certs/com.example.SomeApp.voip.cert.pem"},
+                                                  {keyfile, "/etc/scpf/certs/com.example.SomeApp.voip.key.unencrypted.pem"},
+                                                  {verify, verify_peer},
+                                                  {honor_cipher_order, false},
+                                                  {versions, ['tlsv1.2']},
+                                                  {alpn_advertised_protocols, [<<"h2">>]}]}
+                                     ]
+                            }
+                           ],
+                           %%
+                           [
+                            {name, 'apnsv3-com.example.SomeApp.voip--DEV'},
+                            {config, [{apns_env, dev},
+                                      {host, <<"api.develop.push.apple.com">>},
+                                      {port, 443},
+                                      {bundle_seed_id, <<"com.example.SomeApp">>},
+                                      {apns_topic, <<"com.example.SomeApp.voip">>},
+                                      {disable_apns_cert_validation, true}, % TODO: fix this
+                                      {ssl_opts, [
+                                                  {certfile, "/etc/scpf/certs/com.example.SomeApp.voip.cert.pem"},
+                                                  {keyfile, "/etc/scpf/certs/com.example.SomeApp.voip.key.unencrypted.pem"},
+                                                  {verify, verify_peer},
+                                                  {honor_cipher_order, false},
+                                                  {versions, ['tlsv1.2']},
+                                                  {alpn_advertised_protocols, [<<"h2">>]}
+                                                 ]
+                                      }
+                                     ]
+                            } % config
+                           ]
+                          ]
+               } % sessions
+              ]
+ },
+
+ {gcm_erl, [
+            {service, [
+                       {name, gcm},
+                       {mod, sc_push_svc_gcm},
+                       {description, "Google Cloud Messaging Service"}
+                      ]
+            }, % service
+
+            {sessions, [
+                        [
+                         {name, 'gcm-com.example.SomeApp'},
+                         {config, [
+                                   {api_key, <<"SomeAPIKey">>},
+                                   {ssl_opts, [{verify, verify_none}]},
+                                   {uri, "https://gcm-http.googleapis.com/gcm/send"},
+                                   {max_attempts, 5 },
+                                   {retry_interval, 1 },
+                                   {max_req_ttl, 600 }
+                                  ]
+                         } % config
+                        ],
+                        %%
+                        [
+                         {name, 'gcm-com.example.SomeApp--DEV'},
+                         {config, [
+                                   {api_key, <<"SomeAPIKey">>},
+                                   {ssl_opts, [{verify, verify_none}]},
+                                   {uri, "https://gcm-http.googleapis.com/gcm/send"},
+                                   {max_attempts, 5 },
+                                   {retry_interval, 1 },
+                                   {max_req_ttl, 600 }
+                                  ]
+                         } % config
+                        ]
+                       ]
+            } % sessions
+           ]
+ },
+
+ {lager, [
+          %% What handlers to install with what arguments
+          {handlers, [
+                      {lager_console_backend, info },
+                      {lager_file_backend, [{file, "/var/log/scpf/error.log"},
+                                            {level, error},
+                                            {size, 10485760},
+                                            {date, "$D0"},
+                                            {count, 5}
+                                           ]
+                      },
+                      {lager_file_backend, [{file, "/var/log/scpf/console.log"},
+                                            {level, info},
+                                            {size, 10485760},
+                                            {date, "$D0"},
+                                            {count, 5}
+                                           ]
+                      }
+                     ]
+          }, % handlers
+          %% Whether to write a crash log, and where. Undefined means no crash logger.
+          {crash_log, "/var/log/scpf/crash.log"},
+          %% Maximum size in bytes of events in the crash log - defaults to 65536
+          {crash_log_msg_size, 65536},
+          %% Maximum size of the crash log in bytes, before its rotated, set
+          %% to 0 to disable rotation - default is 0
+          {crash_log_size, 10485760},
+          %% What time to rotate the crash log - default is no time
+          %% rotation. See the README for a description of this format.
+          {crash_log_date, "$D0"},
+          %% Number of rotated crash logs to keep, 0 means keep only the
+          %% current one - default is 0
+          {crash_log_count, 5},
+          %% Whether to redirect error_logger messages into lager - defaults to true
+          {error_logger_redirect, true}
+         ]
+ } % lager
+].

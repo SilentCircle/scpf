@@ -8,6 +8,8 @@
 
 # Uncomment this to turn on verbose mode.
 export DH_VERBOSE=1
+export REBAR_PROFILE=prod
+export SCPF_OVERRIDE_REL=prod
 
 package=scpf
 erts_vsn=$(shell ./erts-version)
@@ -25,13 +27,18 @@ override_dh_gencontrol:
 	dh_gencontrol
 
 # Commands not to run:
+override_dh_auto_build:
+	dh_testroot
+	dh_prep
+	dh_installdirs
+
 override_dh_auto_test:
 
 build:
-	sed -re 's/\{\{[[:space:]]*erts_vsn[[:space:]]*\}\}/$(erts_vsn)/g' \
-		debian/scpf.service.src > debian/scpf.service
+	cp debian/scpf.service.src debian/scpf.service
+	if test -f ./rebar3; then ./rebar3 report tar; true; else true; fi
 	unset CC CFLAGS CPPFLAGS LDFLAGS CXX CXXFLAGS \
-		&& $(MAKE) rel
+		&& $(MAKE) tar DEBUG=1
 	touch build
 
 clean:

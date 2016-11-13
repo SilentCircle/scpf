@@ -1,0 +1,7 @@
+$if(has-tables)$
+.\"t
+$endif$
+.TH SCPF 1 "$date$" "$version$"
+.SH NAME
+scpf - general push service provider written in Erlang.
+$body$
