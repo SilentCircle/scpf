@@ -1,0 +1,22 @@
+{application, scpf,
+    [
+        {description, "Silent Circle Push Framework Application"},
+        {vsn, {cmd, "echo `cat APP_VERSION`"}},
+        {registered, []},
+        {applications, [
+                kernel,
+                stdlib,
+                sasl,
+                crypto,
+                public_key,
+                ssl,
+                mnesia,
+                lager,
+                sc_push,
+                apns_erl,
+                gcm_erl
+            ]},
+        {env, []}
+    ]
+}.
+

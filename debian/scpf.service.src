@@ -1,0 +1,22 @@
+[Unit]
+Description=Erlang Silent Circle Push Framework application
+Documentation=man:scpf(1)
+Requires=epmd.socket
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Environment=ERTS_PATH=/usr/lib/scpf/{{ erts_vsn }}/bin RUNNER_LOG_DIR=/var/log/scpf RUNNER_USR_DIR=/usr
+WorkingDirectory=/var/lib/scpf
+User=scpf
+Group=scpf
+LimitNOFILE=16000
+RestartSec=5
+ExecStart=/usr/sbin/scpf foreground
+ExecStop=/usr/sbin/scpf stop
+Type=simple
+PIDFile=/var/run/scpf/scpf.pid
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

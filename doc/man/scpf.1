@@ -1,0 +1,76 @@
+.\"scpf is copyright Silent Circle LLC
+.Dd 2016 Silent Circle LLC
+.Dt scpf(1) "" "Silent Circle Push Framework"
+.\".Dt scpf 1
+.Os UNIX
+.Sh NAME
+.Nm scpf
+.Nd Silent Circle Push Framework
+.Sh SYNOPSIS
+.Nm
+.Op start
+.Op start_boot <file>
+.Op foreground
+.Op version
+.Op erts_vsn
+.Op console
+.Op attach
+.Op remote_console
+.Sh DESCRIPTION
+scpf is a general push notification service provider written in Erlang.
+.Sh OPTIONS
+The \fBscpf\fR command controls the main server process.
+.Bl -tag -width "1234567890123" -compact
+.Pp
+.It start
+Starts scpf node background process; outputs message "Node is already running!"
+when attempting to start an already running node.
+.Pp
+.It start_boot <file>
+Starts SCPF node using boot script \fB<file>\fR.
+.Pp
+.It foreground
+Starts SCPF in foreground mode. This is useful for running under a supervisor
+like systemd, or debugging.
+.Pp
+.It version
+Shows the SCPF version from /usr/lib/scpf/releases/start_erl.data.
+.Pp
+.It erts-_vsn
+Shows the ERTS version from /usr/lib/scpf/releases/start_erl.data.
+.Pp
+.It console
+Starts scpf as a foreground process with access to the Erlang console messages
+and shell; outputs "Node is already running - use 'scpf attach' instead" when
+node is already running as a background process.
+.Pp
+.It stop
+Stops scpf node; outputs "ok" on success or warnings about the node not
+responding to pings when node is not responding or not running.
+If attached to scpf on the Erlang shell, stop like this example:
+.Pp
+(scpf@example.com)1> q().
+.Pp
+.It restart
+Stops and starts scpf node while maintaining current Erlang virtual machine;
+outputs "ok" on success or warnings about node not responding to pings when
+node is not responding or not running.
+.Pp
+.It reboot
+Stops and starts scpf node while also exiting the current Erlang virtual
+machine; outputs "ok" on success or warnings about node not responding to pings
+when node is not responding or not running.
+.Pp
+.It ping
+Pings scpf node as a basic test for node liveness; outputs "pong" on success or
+warnings about the not not responding to pings when node is not responding or
+not running.
+.Pp
+.It attach
+Attach to a running scpf process with access to the Erlang console messages and
+shell.
+.El
+.Sh AUTHORS
+Edwin Fine efine@silentcircle.com
+.An https://silentcircle.com
+

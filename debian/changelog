@@ -1,0 +1,10 @@
+scpf (1.1.19) stable; urgency=medium
+
+  * Initial open source release.
+  * Version 1.1.19
+
+    * Fix rebar.config.lock, which had older versions of apns_erl and sc_push
+      repositories. The only functional difference is that sc_push now does
+      asynchronous pushes; other changes involve documentation and cleanup.
+
+ -- Edwin Fine <efine@silentcircle.com>  Thu, 18 Feb 2016 09:09:20 -0500

@@ -1,0 +1,11 @@
+etc/scpf
+etc/scpf/certs
+etc/logrotate.d
+usr/lib/scpf
+usr/lib/scpf/bin
+usr/sbin
+usr/share/man/man1
+var/run/scpf
+var/lib/scpf
+var/log/scpf
+var/log/scpf/sasl

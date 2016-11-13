@@ -1,0 +1,4 @@
+#!/usr/bin/env escript
+%%
+main(_) ->
+    io:format("erts-~s\n", [erlang:system_info(version)]).

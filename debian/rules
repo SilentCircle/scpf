@@ -1,0 +1,39 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+# Sample debian/rules that uses debhelper.
+# This file was originally written by Joey Hess and Craig Small.
+# As a special exception, when this file is copied by dh-make into a
+# dh-make output file, you may use that output file without restriction.
+# This special exception was added by Craig Small in version 0.37 of dh-make.
+
+# Uncomment this to turn on verbose mode.
+export DH_VERBOSE=1
+
+package=scpf
+erts_vsn=$(shell ./erts-version)
+
+CFLAGS=
+LDFLAGS=
+
+%:
+	dh $@ --with=systemd
+
+# Overriding because previous steps blow away
+# erlang entries in substvars.
+override_dh_gencontrol:
+	erlang-depends
+	dh_gencontrol
+
+# Commands not to run:
+override_dh_auto_test:
+
+build:
+	sed -re 's/\{\{[[:space:]]*erts_vsn[[:space:]]*\}\}/$(erts_vsn)/g' \
+		debian/scpf.service.src > debian/scpf.service
+	unset CC CFLAGS CPPFLAGS LDFLAGS CXX CXXFLAGS \
+		&& $(MAKE) rel
+	touch build
+
+clean:
+	rm -f build debian/scpf.service
+

@@ -1,0 +1,25 @@
+Source: scpf
+Section: net
+Priority: extra
+Maintainer: Edwin Fine <efine@silentcircle.com>
+Build-Depends:
+    dh-systemd (>= 1.5),
+    debhelper (>= 9),
+    quilt,
+    erlang (>= 1:17.3~),
+    erlang-dev (>= 1:17.3~),
+    git (>= 1.7~)
+Standards-Version: 3.9.5
+Homepage: http://silentcircle.com/
+
+Package: scpf
+Architecture: any
+Depends:
+    adduser,
+    logrotate,
+    sudo,
+    ${erlang:Depends},
+    ${erlang-abi:Depends},
+    ${shlibs:Depends},
+    ${misc:Depends}
+Description: scpf is the Silent Circle Push Framework application, written in Erlang.
