@@ -1,3 +1,4 @@
+{"1.1.0",
 [{<<"apns_erl">>,
   {git,"https://github.com/SilentCircle/apns_erl.git",
        {ref,"5c5394fe44692e7bbe3c8c26844e118417d94256"}},
@@ -30,6 +31,7 @@
   {git,"https://github.com/joedevivo/hpack.git",
        {ref,"2880ff4e88df18a31728893afc6746dcab1acf79"}},
   0},
+ {<<"jsone">>,{pkg,<<"jsone">>,<<"1.2.3">>},1},
  {<<"jsx">>,
   {git,"https://github.com/talentdeficit/jsx.git",
        {ref,"3074d4865b3385a050badf7828ad31490d860df5"}},
@@ -50,6 +52,14 @@
   {git,"https://github.com/okeuday/quickrand.git",
        {ref,"559e5e3f28bb2bf51acbc38f1c47b12c10094117"}},
   0},
+ {<<"raven">>,
+  {git,"https://github.com/artemeff/raven-erlang.git",
+       {ref,"559da22fdb704d224d24f01a0da916a75e683d71"}},
+  0},
+ {<<"raven_erlang">>,
+  {git,"https://github.com/artemeff/raven-erlang.git",
+       {ref,"559da22fdb704d224d24f01a0da916a75e683d71"}},
+  0},
  {<<"sc_push">>,
   {git,"https://github.com/SilentCircle/sc_push.git",
        {ref,"f955c47a028ce85033a222a52e67e405841b21f8"}},
@@ -69,4 +79,8 @@
  {<<"webmachine">>,
   {git,"https://github.com/webmachine/webmachine.git",
        {ref,"06a880f576692d2a07dfd73b6db189b2cb93fbdb"}},
-  0}].
+  0}]}.
+[
+{pkg_hash,[
+ {<<"jsone">>, <<"D2E9979326BDAACF50AB0E52C80F53D74CDED93D1AE21FABCF66346238CC0322">>}]}
+].
