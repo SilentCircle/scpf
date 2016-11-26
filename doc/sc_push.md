@@ -565,7 +565,7 @@ A raw uuid in the form `<<_:128>>`.
 
 
 <table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#async_send-1">async_send/1</a></td><td>Asynchronously sends a notification specified by proplist
-<code>Notification</code>.</td></tr><tr><td valign="top"><a href="#async_send-2">async_send/2</a></td><td></td></tr><tr><td valign="top"><a href="#deregister_device_ids-1">deregister_device_ids/1</a></td><td>Deregister multiple registered device IDs.</td></tr><tr><td valign="top"><a href="#deregister_id-1">deregister_id/1</a></td><td>Deregister a registered ID.</td></tr><tr><td valign="top"><a href="#deregister_ids-1">deregister_ids/1</a></td><td>Deregister multiple registered IDs.</td></tr><tr><td valign="top"><a href="#get_all_service_configs-0">get_all_service_configs/0</a></td><td>Get all service configurations.</td></tr><tr><td valign="top"><a href="#get_registration_info_by_id-1">get_registration_info_by_id/1</a></td><td>Get registration info corresponding to a device ID.</td></tr><tr><td valign="top"><a href="#get_registration_info_by_svc_tok-2">get_registration_info_by_svc_tok/2</a></td><td>Get registration info corresponding to service and reg id.</td></tr><tr><td valign="top"><a href="#get_registration_info_by_tag-1">get_registration_info_by_tag/1</a></td><td>Get registration info corresponding to a tag.</td></tr><tr><td valign="top"><a href="#get_service_config-1">get_service_config/1</a></td><td>Get service configuration.</td></tr><tr><td valign="top"><a href="#get_session_pid-1">get_session_pid/1</a></td><td>Get pid of named session.</td></tr><tr><td valign="top"><a href="#make_service_child_spec-1">make_service_child_spec/1</a></td><td>Make a supervisor child spec for a service.</td></tr><tr><td valign="top"><a href="#quiesce_all_services-0">quiesce_all_services/0</a></td><td>Quiesce all services.</td></tr><tr><td valign="top"><a href="#quiesce_service-1">quiesce_service/1</a></td><td>Quiesce a service.</td></tr><tr><td valign="top"><a href="#quiesce_session-2">quiesce_session/2</a></td><td>Quiesce session.</td></tr><tr><td valign="top"><a href="#register_id-1">register_id/1</a></td><td>
+<code>Notification</code>.</td></tr><tr><td valign="top"><a href="#async_send-2">async_send/2</a></td><td></td></tr><tr><td valign="top"><a href="#deregister_device_ids-1">deregister_device_ids/1</a></td><td>Deregister multiple registered device IDs.</td></tr><tr><td valign="top"><a href="#deregister_id-1">deregister_id/1</a></td><td>Deregister a registered ID.</td></tr><tr><td valign="top"><a href="#deregister_ids-1">deregister_ids/1</a></td><td>Deregister multiple registered IDs.</td></tr><tr><td valign="top"><a href="#get_all_service_configs-0">get_all_service_configs/0</a></td><td>Get all service configurations.</td></tr><tr><td valign="top"><a href="#get_registration_info_by_id-1">get_registration_info_by_id/1</a></td><td>Get registration info corresponding to a device ID.</td></tr><tr><td valign="top"><a href="#get_registration_info_by_svc_tok-2">get_registration_info_by_svc_tok/2</a></td><td>Get registration info corresponding to service and reg id.</td></tr><tr><td valign="top"><a href="#get_registration_info_by_tag-1">get_registration_info_by_tag/1</a></td><td>Get registration info corresponding to a tag.</td></tr><tr><td valign="top"><a href="#get_service_config-1">get_service_config/1</a></td><td>Get service configuration.</td></tr><tr><td valign="top"><a href="#get_session_pid-1">get_session_pid/1</a></td><td>Get pid of named session.</td></tr><tr><td valign="top"><a href="#get_version-0">get_version/0</a></td><td>Get scpf version string as a binary.</td></tr><tr><td valign="top"><a href="#make_service_child_spec-1">make_service_child_spec/1</a></td><td>Make a supervisor child spec for a service.</td></tr><tr><td valign="top"><a href="#quiesce_all_services-0">quiesce_all_services/0</a></td><td>Quiesce all services.</td></tr><tr><td valign="top"><a href="#quiesce_service-1">quiesce_service/1</a></td><td>Quiesce a service.</td></tr><tr><td valign="top"><a href="#quiesce_session-2">quiesce_session/2</a></td><td>Quiesce session.</td></tr><tr><td valign="top"><a href="#register_id-1">register_id/1</a></td><td>
 Register to receive push notifications.</td></tr><tr><td valign="top"><a href="#register_ids-1">register_ids/1</a></td><td>Perform multiple registrations.</td></tr><tr><td valign="top"><a href="#register_service-1">register_service/1</a></td><td>Register a service in the service configuration registry.</td></tr><tr><td valign="top"><a href="#send-1">send/1</a></td><td>Send a notification specified by proplist <code>Notification</code>.</td></tr><tr><td valign="top"><a href="#send-2">send/2</a></td><td></td></tr><tr><td valign="top"><a href="#start-0">start/0</a></td><td></td></tr><tr><td valign="top"><a href="#start_service-1">start_service/1</a></td><td>Start a push service.</td></tr><tr><td valign="top"><a href="#start_session-2">start_session/2</a></td><td>Start named session as described in the options proplist <code>Opts</code>.</td></tr><tr><td valign="top"><a href="#stop_service-1">stop_service/1</a></td><td>Stops a service and all sessions for that service.</td></tr><tr><td valign="top"><a href="#stop_session-2">stop_session/2</a></td><td>Stop named session.</td></tr></table>
 
 
@@ -713,6 +713,20 @@ get_session_pid(Name) -&gt; Result
 <ul class="definitions"><li><code>Name = atom()</code></li><li><code>Result = pid() | undefined</code></li></ul>
 
 Get pid of named session.
+
+<a name="get_version-0"></a>
+
+### get_version/0 ###
+
+<pre><code>
+get_version() -&gt; Result
+</code></pre>
+
+<ul class="definitions"><li><code>Result = binary()</code></li></ul>
+
+Get scpf version string as a binary.
+In the unlikely event that an error occurs, the
+version will be returned as `<<"?.?.?">>`.
 
 <a name="make_service_child_spec-1"></a>
 

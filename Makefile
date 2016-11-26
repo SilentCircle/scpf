@@ -6,8 +6,8 @@
 # make rel REBAR_PROFILE=prod
 #----------------------------------------------------------------------------
 .PHONY: all clean compile ct dev_rel dev_package \
-		dialyzer distclean doc docclean install manifest help info \
-		profiles prod_rel rel relclean run
+		dialyzer distclean doc docclean install help info \
+		profiles prod_rel rel relclean run vsn
 
 PACKAGE := scpf
 PKG_LIB_DIR := $(DESTDIR)/usr/lib/$(PACKAGE)
@@ -39,15 +39,20 @@ ifeq ($(REBAR),)
 REBAR = $(CURDIR)/rebar3
 endif
 
-APP_VERSION := $(shell cat APP_VERSION)
+all: vsn compile
 
-GIT=$(call get_prog,git)
-GIT_MOD_CMD = diff --quiet
-GIT_UC_CMD = diff --cached --quiet
+include pkg.mk
+
+ifeq ($(wildcard APP_VERSION),APP_VERSION)
+APP_VERSION = $(shell cat APP_VERSION)
+else
+APP_VERSION = $(DCH_VERSION)
+endif
 
 MARKDOWN_PGM := pandoc
 
-all: compile
+vsn:
+	@if [ ! -f APP_VERSION ]; then echo $(APP_VERSION) > APP_VERSION; fi
 
 help:
 	@echo
@@ -79,12 +84,15 @@ run: $(REBAR)
 	$(REBAR) as shell do shell --name scpf@127.0.0.1 --setcookie scpf
 
 dev_rel: $(REBAR) manpage
+	@echo Building version $(APP_VERSION)
 	@$(REBAR) as dev do clean, release
 
 prod_rel: $(REBAR) manpage
+	@echo Building version $(APP_VERSION)
 	@$(REBAR) as prod do clean, release
 
 rel: $(REBAR) manpage
+	@echo Building version $(APP_VERSION)
 	@$(REBAR) do clean, release
 
 tar: $(REBAR) manpage
@@ -124,16 +132,6 @@ distclean: clean pkgclean
 
 docclean:
 	@rm -rf doc/man/scpf.1
-
-manifest:
-	@if [ -d _build/$(REBAR_PROFILE)/lib ]; then \
-		{ echo $(pwd)/.git; find -L _build/$(REBAR_PROFILE)/lib -type d -name ".git"; } | \
-		while read gd; do \
-			wd="$$(dirname $$gd)"; \
-			app="$$(basename $$wd)"; \
-			echo "$$app	$$($(GIT) --git-dir="$$gd" --work-tree="$$wd" describe --long --always)"; \
-		done | sort; \
-	fi
 
 ct: $(REBAR)
 	$(REBAR) do clean, ct --name ct1_scpf --setcookie scpf
@@ -185,9 +183,5 @@ pkgclean:
 $(REBAR):
 	curl -s -Lo rebar3 $(REBAR3_URL) || wget $(REBAR3_URL)
 	chmod a+x $(REBAR)
-
-include pkg.mk
-include util.mk
-include checks.mk
 
 # vim: set filetype=make syntax=make noet ts=4 sts=4 sw=4 si:

@@ -33,12 +33,16 @@ DbgDo = fun(F) when is_function(F, 0) ->
                 Dbg andalso F()
         end.
 
-Dmsg = fun(Fmt, Args) ->
-               DbgDo(fun() ->
-                             io:format(standard_error, Fmt, Args),
-                             true
-                     end)
-       end.
+Msg = fun(Fmt, Args) ->
+              io:format(standard_error, Fmt, Args),
+              true
+      end.
+
+MsgFun = fun(Fmt, Args) ->
+                 fun() -> Msg(Fmt, Args) end
+         end.
+
+Dmsg = fun(Fmt, Args) -> DbgDo(MsgFun(Fmt, Args)) end.
 
 %% Expect {'Some', X} and return X.
 Some = fun({'Some', X}) ->
@@ -117,9 +121,12 @@ ReplaceRelx =
                             AndThen(GetRel(Relx0),
                                     fun(Rel0) ->
                                             AndThen(ReplaceRel(Rel0),
-                                                    fun({release,_,_}=Rel) ->
+                                                    fun({release, {_, semver}, _}=Rel) ->
                                                             Relx = SetVal(release, Rel, Relx0),
-                                                            SetProp(relx, Some(Relx), PL)
+                                                            SetProp(relx, Some(Relx), PL);
+                                                       (Rel) ->
+                                                            Msg("Cannot replace relx config ~p", [Rel]),
+                                                            PL
                                                     end)
                                     end)
                     end)
@@ -127,10 +134,14 @@ ReplaceRelx =
 
 ReplOverrideProfile =
     fun(Profiles, Vsn) ->
+            Dmsg("ReplOverrideProfile, Profiles: ~p, Vsn: ~p\n", [Profiles, Vsn]),
             AndThen(GetVal(Vsn, Profiles),
                     fun(Prof) ->
+                            Dmsg("ReplOverrideProfile, Prof: ~p\n", [Prof]),
                             AndThen(ReplaceRelx(Prof),
                                     fun(NewProf) ->
+                                            Dmsg("ReplOverrideProfile, "
+                                                 "NewProf: ~p\n", [NewProf]),
                                             SetProp(Vsn, Profiles, NewProf)
                                     end)
                     end)
@@ -249,26 +260,36 @@ ConfigurePreHooks =
 %% the value of the env var converted to atom as the release.
 %% Otherwise return 'None'.
 SCPF_OVERRIDE_REL =
-     fun() ->
-             Return(case os:getenv("SCPF_OVERRIDE_REL") of
-                        false -> undefined;
-                        Str   -> list_to_atom(Str)
-                    end)
-     end.
+    fun() ->
+            Res = Return(case os:getenv("SCPF_OVERRIDE_REL") of
+                             false -> undefined;
+                             Str   -> list_to_atom(Str)
+                         end),
+            Dmsg("SCPF_OVERRIDE_REL returned ~p\n", [Res]),
+            Res
+    end.
 
 %% Return {'Some', NewConfig} if SCPF_OVERRIDE_REL env var exists, 'None'
 %% otherwise.
 MaybeOverride =
-     fun(Cfg) ->
-             AndThen(SCPF_OVERRIDE_REL(),
-                     fun(Vsn) when is_atom(Vsn) ->
-                             OrElse(ReplOverrideVsn(Cfg, Vsn),
-                                    fun() ->
-                                            OrElse(ReplaceRelx(Cfg),
-                                                   fun() -> Identity(Cfg) end)
-                                    end)
-                     end)
-     end.
+    fun(Cfg) ->
+            Res = AndThen(SCPF_OVERRIDE_REL(),
+                          fun(Vsn) when is_atom(Vsn) ->
+                                  Dmsg("MaybeOverride, Vsn: ~p\n", [Vsn]),
+                                  OrElse(ReplOverrideVsn(Cfg, Vsn),
+                                         fun() ->
+                                                 Dmsg("MaybeOverride, OrElse1\n", []),
+                                                 OrElse(ReplaceRelx(Cfg),
+                                                        fun() ->
+                                                                Res = Return(Identity(Cfg)),
+                                                                Dmsg("MaybeOverride OrElse2: ~p\n", [Res]),
+                                                                Res
+                                                        end)
+                                         end)
+                          end),
+            Dmsg("MaybeOverride returned ~p\n", [Res]),
+            Res
+    end.
 
 EDOWN_TARGET =
     fun() ->
@@ -337,7 +358,9 @@ ConfigEdocVsn =
 {CONFIG1, _} = lists:foldl(
                  fun(ModCfg, {Cfg, N}) when is_function(ModCfg, 1) ->
                          Dmsg("Old Cfg ~B: ~p~n", [N, Cfg]),
-                         Acc = case ModCfg(Cfg) of
+                         ModdedCfg = ModCfg(Cfg),
+                         Dmsg("Modded Cfg ~B: ~p~n", [N, ModdedCfg]),
+                         Acc = case ModdedCfg of
                                    {'Some', NewCfg} ->
                                        Dmsg("New Cfg ~B: ~p~n", [N, NewCfg]),
                                        NewCfg;

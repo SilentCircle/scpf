@@ -1,13 +1,14 @@
 {application, scpf,
     [
         {description, "Silent Circle Push Framework Application"},
-        {vsn, {cmd, "echo `cat APP_VERSION`"}},
+        {vsn, {cmd, "./scpf_version.sh"}},
         {registered, []},
         {applications, [
                 sc_push,
                 apns_erl,
                 apns_erlv3,
-                gcm_erl
+                gcm_erl,
+                raven_erlang
             ]},
         {env, []}
     ]

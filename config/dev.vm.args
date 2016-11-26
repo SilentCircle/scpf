@@ -1,5 +1,7 @@
+## See overlay/dev.vars.config
+
 ## Name of the node
--name scpf@127.0.0.1
+-name {{ node }}
 
 ## Cookie for distributed erlang
 -setcookie scpf
