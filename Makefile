@@ -39,7 +39,13 @@ ifeq ($(REBAR),)
 REBAR = $(CURDIR)/rebar3
 endif
 
-APP_VERSION := $(shell cat APP_VERSION)
+include pkg.mk
+
+ifeq ($(wildcard APP_VERSION),APP_VERSION)
+APP_VERSION = $(shell cat APP_VERSION)
+else
+APP_VERSION = $(DCH_VERSION)
+endif
 
 GIT=$(call get_prog,git)
 GIT_MOD_CMD = diff --quiet
@@ -79,12 +85,15 @@ run: $(REBAR)
 	$(REBAR) as shell do shell --name scpf@127.0.0.1 --setcookie scpf
 
 dev_rel: $(REBAR) manpage
+	@echo Building version $(APP_VERSION)
 	@$(REBAR) as dev do clean, release
 
 prod_rel: $(REBAR) manpage
+	@echo Building version $(APP_VERSION)
 	@$(REBAR) as prod do clean, release
 
 rel: $(REBAR) manpage
+	@echo Building version $(APP_VERSION)
 	@$(REBAR) do clean, release
 
 tar: $(REBAR) manpage
@@ -186,7 +195,6 @@ $(REBAR):
 	curl -s -Lo rebar3 $(REBAR3_URL) || wget $(REBAR3_URL)
 	chmod a+x $(REBAR)
 
-include pkg.mk
 include util.mk
 include checks.mk
 
