@@ -1,3 +1,5 @@
+## See overlay/vars.config
+
 ## Name of the node
 -name {{ node }}
 

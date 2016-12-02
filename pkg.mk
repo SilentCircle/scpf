@@ -1,4 +1,4 @@
-GIT := $(shell which git)
+include checks.mk
 
 ifeq ($(GIT),)
 $(error git is required for this build but is not on the path)
@@ -13,7 +13,7 @@ EXTRA_VERSION := 0
 endif
 
 DATE := $(shell date +'%Y-%m-%d')
-DATETIME := $(shell date --utc +'%Y%m%d%H%M%S')
+DATETIME := $(shell date -u +'%Y%m%d%H%M%S')
 OSNAME := $(shell lsb_release --short --id)
 ARCH := $(shell dpkg-architecture -qDEB_BUILD_ARCH)
 VERSIONSTRING = $(PACKAGE) ($(PKG_VERSION) $(DATE)) $(OSNAME) $(ARCH)
