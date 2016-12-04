@@ -152,6 +152,7 @@ and the app ID must have been configured for the SCPF service.
 - Get registration info by tag
 - Get registration info by service+token
 - Get registration info for a device id
+- Get SCPF version
 
 ## Overview
 
@@ -672,6 +673,39 @@ Responses are the same for all `/push/send` API calls. See
 "Response Format" section.
 
 ---
+
+# Miscellaneous REST endpoints
+
+
+## Get SCPF Version
+
+**Endpoint**
+
+`/version`
+
+**Method**
+
+`GET` - Retrieve SCPF service version
+
+**Request Parameters**
+
+There are no request parameters.
+
+**Response**
+
+- 200 OK
+
+**Example**
+
+
+    GET /version
+    HTTP/1.1 200 OK
+    Content-Type: application/json
+    {"version":"vX.Y.Z"}
+
+
+The format of the version string is not guaranteed to conform to any standard.
+
 
 # Building
 

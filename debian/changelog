@@ -3,6 +3,7 @@ scpf (2.0.0) unstable; urgency=medium
   * Version 2.0.0
 
     * Add support for APNS HTTP/2.
+    * Add support for Sentry.
     * Add some library support for JWT, but it's not ready for use with
       APNS HTTP/2. That will come in a future release.
     * Deprecate old APNS session (apns_erl) in favor of apns_erlv3.
@@ -16,7 +17,7 @@ scpf (2.0.0) unstable; urgency=medium
       Remove, change, or sanitize SC-specific information and references.
     * Move repositories to public github.
 
- -- Edwin Fine <efine@silentcircle.com>  Sun, 13 Nov 2016 13:54:53 -0500
+ -- Edwin Fine <efine@silentcircle.com>  Fri, 02 Dec 2016 18:44:43 -0500
 
 scpf (1.2.0) unstable; urgency=medium
 
