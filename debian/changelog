@@ -1,3 +1,11 @@
+scpf (2.0.1) unstable; urgency=medium
+
+  * Version 2.0.1
+
+    * Support Provider Authentication Tokens (JWTs)
+
+ -- Edwin Fine <efine@silentcircle.com>  Mon, 05 Dec 2016 16:58:00 -0500
+
 scpf (2.0.0) unstable; urgency=medium
 
   * Version 2.0.0
