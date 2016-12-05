@@ -83,7 +83,7 @@ used for one of two purposes:
 <ul>
 <li>To validate the APNS certificate unless
 <code>disable_apns_cert_validation</code> is <code>true</code>.</li>
-<li>When this supports JWT authentication, it will be
+<li>When JWT authentication is active, it will be
 used as the Issuer (iss) in the JWT.</li>
 </ul>
 </dd>
@@ -98,6 +98,19 @@ used as the Issuer (iss) in the JWT.</li>
 <dd>The AppID Suffix as a binary, usually in reverse DNS format.  This is
 used to validate the APNS certificate unless
 <code>disable_apns_cert_validation</code> is <code>true</code>.</dd>
+
+
+
+<dt><code>apns_jwt_info</code></dt>
+
+
+
+
+<dd><code>{Kid :: binary(), KeyFile :: binary()} | undefined</code>.<code>Kid</code> is the
+key id corresponding to the signind key.<code>KeyFile</code> is the name of the
+PEM-encoded JWT signing key to be used for authetication. This value is
+mutually exclusive with <code>ssl_opts</code>.  If this value is provided and is not
+<code>undefined</code>, <code>ssl_opts</code> will be ignored.</dd>
 
 
 
@@ -209,6 +222,7 @@ See <a href="http://erlang.org/doc/man/ssl.md" target="_top"><tt>http://erlang.o
     {port, 443},
     {apns_env, prod},
     {apns_topic, <<"com.example.MyApp">>},
+    {apns_jwt_info, {<<"KEYID67890">>, <<"/path/to/private/key.pem">>}},
     {app_id_suffix, <<"com.example.MyApp">>},
     {team_id, <<"6F44JJ9SDF">>},
     {retry_strategy, exponential},
@@ -359,7 +373,7 @@ send_callback() = fun((list(), <a href="#type-cb_req">cb_req()</a>, <a href="#ty
 
 
 <pre><code>
-send_opt() = {token, <a href="#type-bstrtok">bstrtok()</a>} | {topic, binary()} | {uuid, <a href="#type-uuid_str">uuid_str()</a>} | {priority, integer()} | {expiry, integer()} | {json, binary()}
+send_opt() = {token, <a href="#type-bstrtok">bstrtok()</a>} | {topic, binary()} | {uuid, <a href="#type-uuid_str">uuid_str()</a>} | {priority, integer()} | {expiry, integer()} | {json, binary()} | {authorization, binary()}
 </code></pre>
 
 

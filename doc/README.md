@@ -4,7 +4,7 @@
 
 Copyright (c) 2016 Silent Circle
 
-__Version:__ Dec 4 2016 15:51:14
+__Version:__ 2.0.0+0~20161205125408.0.gbb7ce11
 
 __Authors:__ Edwin Fine ([`efine@silentcircle.com`](mailto:efine@silentcircle.com)).
 
