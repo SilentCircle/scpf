@@ -1,3 +1,24 @@
+scpf (2.0.2) unstable; urgency=medium
+
+  * Version 2.0.2
+
+    * Fix APNS HTTP/2 500 errors due to idle session or expired token.
+
+      APNS was returning 500 Internal Server Error for no apparent reason. On
+      investigation it appears to be due to a session that has been idle for
+      too long, or possibly because the APNS auth token (JWT) has expired.
+
+      This commit adds the following behaviors:
+
+      1. The session sends an HTTP/2 PING frame periodically (default: 5
+         minutes).
+      2. Whenever it sends a notification, the session first checks that the
+         APNS authentication JWT is newer - based on its 'Issued At (`iat`)
+         field - than a configurable value (default: 55 minutes). If it is not
+         newer, the session generates a new JWT.
+
+ -- Edwin Fine <efine@silentcircle.com>  Mon, 19 Dec 2016 23:14:30 -0500
+
 scpf (2.0.1) unstable; urgency=medium
 
   * Version 2.0.1
