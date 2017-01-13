@@ -202,6 +202,33 @@ Default value: <code>false</code>.
 
 
 
+<dt><code>jwt_max_age_secs</code></dt>
+
+
+
+
+<dd>The number of seconds, measured from the "issued at" (iat)
+JWT POSIX time, after which the JWT should be preemptively reissued.
+The reissuance occurs just prior to the next notification transmission.
+<br />
+Default value: 3300 seconds (55 minutes).
+</dd>
+
+
+
+<dt><code>keepalive_interval</code></dt>
+
+
+
+
+<dd>The number of seconds after which a PING should be sent to the
+peer host.
+<br />
+Default value: 300 seconds (5 minutes).
+</dd>
+
+
+
 <dt><code>ssl_opts</code></dt>
 
 
@@ -229,6 +256,8 @@ See <a href="http://erlang.org/doc/man/ssl.md" target="_top"><tt>http://erlang.o
     {retry_delay, 1000},
     {retry_max, 60000},
     {disable_apns_cert_validation, false},
+    {jwt_max_age_secs, 3300},
+    {keepalive_interval, 300},
     {ssl_opts,
      [{certfile, "/some/path/com.example.MyApp.cert.pem"},
       {keyfile, "/some/path/com.example.MyApp.key.unencrypted.pem"},
@@ -309,6 +338,16 @@ cb_result() = {ok, {<a href="#type-uuid">uuid()</a>, <a href="apns_lib_http2.md#
 
 
 
+### <a name="type-flush_strategy_opt">flush_strategy_opt()</a> ###
+
+
+<pre><code>
+flush_strategy_opt() = on_reconnect | debug_clear
+</code></pre>
+
+
+
+
 ### <a name="type-fsm_ref">fsm_ref()</a> ###
 
 
@@ -323,7 +362,7 @@ fsm_ref() = atom() | pid()
 
 
 <pre><code>
-option() = {host, binary()} | {port, non_neg_integer()} | {app_id_suffix, binary()} | {team_id, binary()} | {apns_env, prod | dev} | {apns_topic, binary()} | {disable_apns_cert_validation, boolean()} | {ssl_opts, list()} | {retry_delay, non_neg_integer()} | {retry_max, pos_integer()} | {retry_strategy, fixed | exponential}
+option() = {host, binary()} | {port, non_neg_integer()} | {app_id_suffix, binary()} | {team_id, binary()} | {apns_env, prod | dev} | {apns_topic, binary()} | {disable_apns_cert_validation, boolean()} | {jwt_max_age_secs, non_neg_integer()} | {keepalive_interval, non_neg_integer()} | {ssl_opts, list()} | {retry_delay, non_neg_integer()} | {retry_max, pos_integer()} | {retry_strategy, fixed | exponential} | {flush_strategy, <a href="#type-flush_strategy_opt">flush_strategy_opt()</a>} | {requeue_strategy, <a href="#type-requeue_strategy_opt">requeue_strategy_opt()</a>}
 </code></pre>
 
 
@@ -354,6 +393,16 @@ queued_result() = {queued, <a href="#type-uuid">uuid()</a>}
 
 <pre><code>
 reply_fun() = fun((<a href="#type-caller">caller()</a>, <a href="#type-uuid">uuid()</a>, <a href="#type-cb_result">cb_result()</a>) -&gt; none())
+</code></pre>
+
+
+
+
+### <a name="type-requeue_strategy_opt">requeue_strategy_opt()</a> ###
+
+
+<pre><code>
+requeue_strategy_opt() = always | debug_never
 </code></pre>
 
 
@@ -453,7 +502,7 @@ uuid_str() = <a href="apns_lib_http2.md#type-uuid_str">apns_lib_http2:uuid_str()
 
 
 <table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#async_send-2">async_send/2</a></td><td>Asynchronously send notification in <code>Opts</code>.</td></tr><tr><td valign="top"><a href="#async_send-3">async_send/3</a></td><td>Asynchronously send notification in <code>Opts</code>.</td></tr><tr><td valign="top"><a href="#async_send_callback-3">async_send_callback/3</a></td><td>Standard async callback function.</td></tr><tr><td valign="top"><a href="#async_send_cb-4">async_send_cb/4</a></td><td>Asynchronously send notification in <code>Opts</code> with user-defined
-callback function.</td></tr><tr><td valign="top"><a href="#get_state-1">get_state/1</a></td><td>Get the current state of the FSM.</td></tr><tr><td valign="top"><a href="#get_state_name-1">get_state_name/1</a></td><td>Get the name of the current state of the FSM.</td></tr><tr><td valign="top"><a href="#is_connected-1">is_connected/1</a></td><td>Return <code>true</code> if the session is connected, <code>false</code> otherwise.</td></tr><tr><td valign="top"><a href="#quiesce-1">quiesce/1</a></td><td>Quiesce a session.</td></tr><tr><td valign="top"><a href="#reconnect-1">reconnect/1</a></td><td>Immediately disconnect the session and reconnect.</td></tr><tr><td valign="top"><a href="#reconnect-2">reconnect/2</a></td><td>Immediately disconnect the session and reconnect after <code>Delay</code> ms.</td></tr><tr><td valign="top"><a href="#resume-1">resume/1</a></td><td>Resume a quiesced session.</td></tr><tr><td valign="top"><a href="#send-2">send/2</a></td><td>Send a notification specified by <code>Nf</code> with options <code>Opts</code>.</td></tr><tr><td valign="top"><a href="#send_cb-3">send_cb/3</a></td><td>Send a notification specified by <code>Nf</code> and a user-supplied callback
+callback function.</td></tr><tr><td valign="top"><a href="#flush-1">flush/1</a></td><td>Flush (retransmit) any queued notifications.</td></tr><tr><td valign="top"><a href="#get_state-1">get_state/1</a></td><td>Get the current state of the FSM.</td></tr><tr><td valign="top"><a href="#get_state_name-1">get_state_name/1</a></td><td>Get the name of the current state of the FSM.</td></tr><tr><td valign="top"><a href="#is_connected-1">is_connected/1</a></td><td>Return <code>true</code> if the session is connected, <code>false</code> otherwise.</td></tr><tr><td valign="top"><a href="#quiesce-1">quiesce/1</a></td><td>Quiesce a session.</td></tr><tr><td valign="top"><a href="#reconnect-1">reconnect/1</a></td><td>Immediately disconnect the session and reconnect.</td></tr><tr><td valign="top"><a href="#reconnect-2">reconnect/2</a></td><td>Immediately disconnect the session and reconnect after <code>Delay</code> ms.</td></tr><tr><td valign="top"><a href="#resume-1">resume/1</a></td><td>Resume a quiesced session.</td></tr><tr><td valign="top"><a href="#send-2">send/2</a></td><td>Send a notification specified by <code>Nf</code> with options <code>Opts</code>.</td></tr><tr><td valign="top"><a href="#send_cb-3">send_cb/3</a></td><td>Send a notification specified by <code>Nf</code> and a user-supplied callback
 function.</td></tr><tr><td valign="top"><a href="#start-2">start/2</a></td><td>Start a named session as described by the options <code>Opts</code>.</td></tr><tr><td valign="top"><a href="#start_link-2">start_link/2</a></td><td>Start a named session as described by the options <code>Opts</code>.</td></tr><tr><td valign="top"><a href="#stop-1">stop/1</a></td><td>Stop session.</td></tr><tr><td valign="top"><a href="#sync_send_callback-3">sync_send_callback/3</a></td><td>Standard sync callback function.</td></tr></table>
 
 
@@ -707,6 +756,18 @@ See `apns_lib_http2:parsed_rsp()`.
   ]
 ```
 
+
+<a name="flush-1"></a>
+
+### flush/1 ###
+
+<pre><code>
+flush(FsmRef) -&gt; ok
+</code></pre>
+
+<ul class="definitions"><li><code>FsmRef = term()</code></li></ul>
+
+Flush (retransmit) any queued notifications.
 
 <a name="get_state-1"></a>
 

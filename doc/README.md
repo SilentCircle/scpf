@@ -4,7 +4,7 @@
 
 Copyright (c) 2016 Silent Circle
 
-__Version:__ Dec 5 2016 17:01:58
+__Version:__ Jan 13 2017 11:57:01
 
 __Authors:__ Edwin Fine ([`efine@silentcircle.com`](mailto:efine@silentcircle.com)).
 
@@ -1079,53 +1079,53 @@ function url(tag) { var o=document.getElementById(tag); return o ? o.href : '#'+
 
 
 <table width="100%" border="0" summary="list of modules">
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/apns_cert.md" class="module">apns_cert</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/apns_erlv3_app.md" class="module">apns_erlv3_app</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/apns_erlv3_session.md" class="module">apns_erlv3_session</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/apns_erlv3_session_sup.md" class="module">apns_erlv3_session_sup</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/apns_json.md" class="module">apns_json</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/apns_jwt.md" class="module">apns_jwt</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/apns_lib.md" class="module">apns_lib</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/apns_lib_http2.md" class="module">apns_lib_http2</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/apns_recs.md" class="module">apns_recs</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/apns_types.md" class="module">apns_types</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/gcm_erl.md" class="module">gcm_erl</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/gcm_erl_app.md" class="module">gcm_erl_app</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/gcm_erl_session.md" class="module">gcm_erl_session</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/gcm_erl_session_sup.md" class="module">gcm_erl_session_sup</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/gcm_erl_util.md" class="module">gcm_erl_util</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/gcm_json.md" class="module">gcm_json</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/gcm_req_sched.md" class="module">gcm_req_sched</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_config.md" class="module">sc_config</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_priority_queue.md" class="module">sc_priority_queue</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push.md" class="module">sc_push</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_app.md" class="module">sc_push_app</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_lib.md" class="module">sc_push_lib</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_lib_app.md" class="module">sc_push_lib_app</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_lib_sup.md" class="module">sc_push_lib_sup</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_reg_api.md" class="module">sc_push_reg_api</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_reg_db.md" class="module">sc_push_reg_db</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_reg_resource.md" class="module">sc_push_reg_resource</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_reg_wm_device.md" class="module">sc_push_reg_wm_device</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_reg_wm_service.md" class="module">sc_push_reg_wm_service</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_reg_wm_tag.md" class="module">sc_push_reg_wm_tag</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_req_mgr.md" class="module">sc_push_req_mgr</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_sup.md" class="module">sc_push_sup</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_svc_apnsv3.md" class="module">sc_push_svc_apnsv3</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_svc_gcm.md" class="module">sc_push_svc_gcm</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_svc_null.md" class="module">sc_push_svc_null</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_svc_null_srv.md" class="module">sc_push_svc_null_srv</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_top.md" class="module">sc_push_top</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_wm_common.md" class="module">sc_push_wm_common</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_wm_helper.md" class="module">sc_push_wm_helper</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_wm_send_device.md" class="module">sc_push_wm_send_device</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_wm_send_svc_appid_tok.md" class="module">sc_push_wm_send_svc_appid_tok</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_wm_send_svc_tok.md" class="module">sc_push_wm_send_svc_tok</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_wm_send_tag.md" class="module">sc_push_wm_send_tag</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_wm_sup.md" class="module">sc_push_wm_sup</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_wm_version.md" class="module">sc_push_wm_version</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_types.md" class="module">sc_types</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_util.md" class="module">sc_util</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_util_app.md" class="module">sc_util_app</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_util_srv.md" class="module">sc_util_srv</a></td></tr></table>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/fix/apns-server-500-errors/doc/apns_cert.md" class="module">apns_cert</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/fix/apns-server-500-errors/doc/apns_erlv3_app.md" class="module">apns_erlv3_app</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/fix/apns-server-500-errors/doc/apns_erlv3_session.md" class="module">apns_erlv3_session</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/fix/apns-server-500-errors/doc/apns_erlv3_session_sup.md" class="module">apns_erlv3_session_sup</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/fix/apns-server-500-errors/doc/apns_json.md" class="module">apns_json</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/fix/apns-server-500-errors/doc/apns_jwt.md" class="module">apns_jwt</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/fix/apns-server-500-errors/doc/apns_lib.md" class="module">apns_lib</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/fix/apns-server-500-errors/doc/apns_lib_http2.md" class="module">apns_lib_http2</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/fix/apns-server-500-errors/doc/apns_recs.md" class="module">apns_recs</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/fix/apns-server-500-errors/doc/apns_types.md" class="module">apns_types</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/fix/apns-server-500-errors/doc/gcm_erl.md" class="module">gcm_erl</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/fix/apns-server-500-errors/doc/gcm_erl_app.md" class="module">gcm_erl_app</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/fix/apns-server-500-errors/doc/gcm_erl_session.md" class="module">gcm_erl_session</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/fix/apns-server-500-errors/doc/gcm_erl_session_sup.md" class="module">gcm_erl_session_sup</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/fix/apns-server-500-errors/doc/gcm_erl_util.md" class="module">gcm_erl_util</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/fix/apns-server-500-errors/doc/gcm_json.md" class="module">gcm_json</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/fix/apns-server-500-errors/doc/gcm_req_sched.md" class="module">gcm_req_sched</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/fix/apns-server-500-errors/doc/sc_config.md" class="module">sc_config</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/fix/apns-server-500-errors/doc/sc_priority_queue.md" class="module">sc_priority_queue</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/fix/apns-server-500-errors/doc/sc_push.md" class="module">sc_push</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/fix/apns-server-500-errors/doc/sc_push_app.md" class="module">sc_push_app</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/fix/apns-server-500-errors/doc/sc_push_lib.md" class="module">sc_push_lib</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/fix/apns-server-500-errors/doc/sc_push_lib_app.md" class="module">sc_push_lib_app</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/fix/apns-server-500-errors/doc/sc_push_lib_sup.md" class="module">sc_push_lib_sup</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/fix/apns-server-500-errors/doc/sc_push_reg_api.md" class="module">sc_push_reg_api</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/fix/apns-server-500-errors/doc/sc_push_reg_db.md" class="module">sc_push_reg_db</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/fix/apns-server-500-errors/doc/sc_push_reg_resource.md" class="module">sc_push_reg_resource</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/fix/apns-server-500-errors/doc/sc_push_reg_wm_device.md" class="module">sc_push_reg_wm_device</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/fix/apns-server-500-errors/doc/sc_push_reg_wm_service.md" class="module">sc_push_reg_wm_service</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/fix/apns-server-500-errors/doc/sc_push_reg_wm_tag.md" class="module">sc_push_reg_wm_tag</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/fix/apns-server-500-errors/doc/sc_push_req_mgr.md" class="module">sc_push_req_mgr</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/fix/apns-server-500-errors/doc/sc_push_sup.md" class="module">sc_push_sup</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/fix/apns-server-500-errors/doc/sc_push_svc_apnsv3.md" class="module">sc_push_svc_apnsv3</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/fix/apns-server-500-errors/doc/sc_push_svc_gcm.md" class="module">sc_push_svc_gcm</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/fix/apns-server-500-errors/doc/sc_push_svc_null.md" class="module">sc_push_svc_null</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/fix/apns-server-500-errors/doc/sc_push_svc_null_srv.md" class="module">sc_push_svc_null_srv</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/fix/apns-server-500-errors/doc/sc_push_top.md" class="module">sc_push_top</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/fix/apns-server-500-errors/doc/sc_push_wm_common.md" class="module">sc_push_wm_common</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/fix/apns-server-500-errors/doc/sc_push_wm_helper.md" class="module">sc_push_wm_helper</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/fix/apns-server-500-errors/doc/sc_push_wm_send_device.md" class="module">sc_push_wm_send_device</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/fix/apns-server-500-errors/doc/sc_push_wm_send_svc_appid_tok.md" class="module">sc_push_wm_send_svc_appid_tok</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/fix/apns-server-500-errors/doc/sc_push_wm_send_svc_tok.md" class="module">sc_push_wm_send_svc_tok</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/fix/apns-server-500-errors/doc/sc_push_wm_send_tag.md" class="module">sc_push_wm_send_tag</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/fix/apns-server-500-errors/doc/sc_push_wm_sup.md" class="module">sc_push_wm_sup</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/fix/apns-server-500-errors/doc/sc_push_wm_version.md" class="module">sc_push_wm_version</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/fix/apns-server-500-errors/doc/sc_types.md" class="module">sc_types</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/fix/apns-server-500-errors/doc/sc_util.md" class="module">sc_util</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/fix/apns-server-500-errors/doc/sc_util_app.md" class="module">sc_util_app</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/fix/apns-server-500-errors/doc/sc_util_srv.md" class="module">sc_util_srv</a></td></tr></table>
 

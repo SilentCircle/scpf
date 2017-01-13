@@ -29,6 +29,16 @@ alg() = <a href="#type-bstring">bstring()</a>
 
 
 
+### <a name="type-apns_jwt_ctx">apns_jwt_ctx()</a> ###
+
+
+<pre><code>
+apns_jwt_ctx() = #apns_jwt_ctx{}
+</code></pre>
+
+
+
+
 ### <a name="type-base64_urlencoded">base64_urlencoded()</a> ###
 
 
@@ -137,6 +147,16 @@ jwt() = <a href="#type-bstring">bstring()</a>
 
 
 
+### <a name="type-key">key()</a> ###
+
+
+<pre><code>
+key() = term()
+</code></pre>
+
+
+
+
 ### <a name="type-kid">kid()</a> ###
 
 
@@ -180,7 +200,11 @@ posix_time() = pos_integer()
 
 ### iss/1 ###
 
-`iss(Apns_jwt_ctx) -> any()`
+<pre><code>
+iss(Context) -&gt; Iss
+</code></pre>
+
+<ul class="definitions"><li><code>Context = <a href="#type-context">context()</a> | <a href="#type-apns_jwt_ctx">apns_jwt_ctx()</a></code></li><li><code>Iss = <a href="#type-iss">iss()</a></code></li></ul>
 
 <a name="jwt-1"></a>
 
@@ -247,13 +271,21 @@ developer portal.</dt>
 
 ### key/1 ###
 
-`key(Apns_jwt_ctx) -> any()`
+<pre><code>
+key(Context) -&gt; Key
+</code></pre>
+
+<ul class="definitions"><li><code>Context = <a href="#type-context">context()</a> | <a href="#type-apns_jwt_ctx">apns_jwt_ctx()</a></code></li><li><code>Key = <a href="#type-key">key()</a></code></li></ul>
 
 <a name="kid-1"></a>
 
 ### kid/1 ###
 
-`kid(Apns_jwt_ctx) -> any()`
+<pre><code>
+kid(Context) -&gt; KID
+</code></pre>
+
+<ul class="definitions"><li><code>Context = <a href="#type-context">context()</a> | <a href="#type-apns_jwt_ctx">apns_jwt_ctx()</a></code></li><li><code>KID = <a href="#type-kid">kid()</a></code></li></ul>
 
 <a name="new-3"></a>
 
