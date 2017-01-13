@@ -9,7 +9,7 @@
   0},
  {<<"apns_erlv3">>,
   {git,"https://github.com/SilentCircle/apns_erlv3.git",
-       {ref,"f2c5518441b4444a54d9ceb07ab3ef8fe050fbe1"}},
+       {ref,"51756b749253250f2dfaa049f501f6042b5c904b"}},
   0},
  {<<"chatterbox">>,
   {git,"https://github.com/joedevivo/chatterbox.git",
