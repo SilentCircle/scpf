@@ -21,7 +21,7 @@
   0},
  {<<"gcm_erl">>,
   {git,"https://github.com/SilentCircle/gcm_erl.git",
-       {ref,"2533998b2c1f828032f94dd65cac36da3a437bd1"}},
+       {ref,"c5f5f146239fd109a8370507f9a8cfd72a324ec1"}},
   0},
  {<<"goldrush">>,
   {git,"https://github.com/DeadZen/goldrush.git",
