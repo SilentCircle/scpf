@@ -95,7 +95,7 @@ used as the Issuer (iss) in the JWT.</li>
 
 
 
-<dd>The AppID Suffix as a binary, usually in reverse DNS format.  This is
+<dd>The App ID Suffix as a binary, usually in reverse DNS format.  This is
 used to validate the APNS certificate unless
 <code>disable_apns_cert_validation</code> is <code>true</code>.</dd>
 
@@ -108,7 +108,7 @@ used to validate the APNS certificate unless
 
 <dd><code>{Kid :: binary(), KeyFile :: binary()} | undefined</code>.<code>Kid</code> is the
 key id corresponding to the signing key.<code>KeyFile</code> is the name of the
-PEM-encoded JWT signing key to be used for authetication. This value is
+PEM-encoded JWT signing key to be used for authentication. This value is
 mutually exclusive with <code>ssl_opts</code>.  If this value is provided and is not
 <code>undefined</code>, <code>ssl_opts</code> will be ignored.</dd>
 
@@ -255,7 +255,7 @@ HTTP/2 requests are being made asynchronously, so the FSM is not
 blocked on actually sending the request over the wire, just on the HTTP/2
 client accepting the request.
 <br />
-Default value: 500.
+Default value: 50.
 </dd>
 
 
@@ -271,7 +271,7 @@ could consume more CPU than desired. If too large, the notifications may
 be delayed too long, which could cause timeout issues. Must be more than
 zero.
 <br />
-Default value: 100.
+Default value: 50.
 </dd>
 
 
@@ -288,16 +288,40 @@ See <a href="http://erlang.org/doc/man/ssl.md" target="_top"><tt>http://erlang.o
 
 
 
-#### <a name="Example_configuration">Example configuration</a> ####
-
+#### <a name="Example_configuration_for_certificate-based_authentication">Example configuration for certificate-based authentication</a> ####
 
 ```
    [{host, <<"api.push.apple.com">>},
     {port, 443},
     {apns_env, prod},
+    {app_id_suffix, <<"com.example.MyApp">>},
+    {apns_topic, <<"com.example.MyApp">>},
+    {team_id, <<"6F44JJ9SDF">>},
+    {retry_strategy, exponential},
+    {retry_delay, 1000},
+    {retry_max, 60000},
+    {disable_apns_cert_validation, false},
+    {keepalive_interval, 300},
+    {ssl_opts,
+     [{certfile, "/some/path/com.example.MyApp.cert.pem"},
+      {keyfile, "/some/path/com.example.MyApp.key.unencrypted.pem"},
+      {honor_cipher_order, false},
+      {versions, ['tlsv1.2']},
+      {alpn_preferred_protocols, [<<"h2">>]}].
+     ]}
+   ]
+```
+
+
+#### <a name="Example_configuration_for_token-based_authentication">Example configuration for token-based authentication</a> ####
+
+```
+   [{host, <<"api.push.apple.com">>},
+    {port, 443},
+    {apns_env, prod},
+    {app_id_suffix, <<"com.example.MyApp">>},
     {apns_topic, <<"com.example.MyApp">>},
     {apns_jwt_info, {<<"KEYID67890">>, <<"/path/to/private/key.pem">>}},
-    {app_id_suffix, <<"com.example.MyApp">>},
     {team_id, <<"6F44JJ9SDF">>},
     {retry_strategy, exponential},
     {retry_delay, 1000},
@@ -306,9 +330,7 @@ See <a href="http://erlang.org/doc/man/ssl.md" target="_top"><tt>http://erlang.o
     {jwt_max_age_secs, 3300},
     {keepalive_interval, 300},
     {ssl_opts,
-     [{certfile, "/some/path/com.example.MyApp.cert.pem"},
-      {keyfile, "/some/path/com.example.MyApp.key.unencrypted.pem"},
-      {cacertfile, "/etc/ssl/certs/ca-certificates.crt"},
+     [
       {honor_cipher_order, false},
       {versions, ['tlsv1.2']},
       {alpn_preferred_protocols, [<<"h2">>]}].
@@ -549,7 +571,8 @@ uuid_str() = <a href="apns_lib_http2.md#type-uuid_str">apns_lib_http2:uuid_str()
 
 <table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#async_send-2">async_send/2</a></td><td>Asynchronously send notification in <code>Opts</code>.</td></tr><tr><td valign="top"><a href="#async_send-3">async_send/3</a></td><td>Asynchronously send notification in <code>Opts</code>.</td></tr><tr><td valign="top"><a href="#async_send_callback-3">async_send_callback/3</a></td><td>Standard async callback function.</td></tr><tr><td valign="top"><a href="#async_send_cb-4">async_send_cb/4</a></td><td>Asynchronously send notification in <code>Opts</code> with user-defined
 callback function.</td></tr><tr><td valign="top"><a href="#disconnect-1">disconnect/1</a></td><td>Make session disconnect.</td></tr><tr><td valign="top"><a href="#get_state-1">get_state/1</a></td><td>Get the current state of the FSM.</td></tr><tr><td valign="top"><a href="#get_state_name-1">get_state_name/1</a></td><td>Get the name of the current state of the FSM.</td></tr><tr><td valign="top"><a href="#is_connected-1">is_connected/1</a></td><td>Return <code>true</code> if the session is connected, <code>false</code> otherwise.</td></tr><tr><td valign="top"><a href="#kick_sender-1">kick_sender/1</a></td><td>Wake up the sender to start sending queued notifications.</td></tr><tr><td valign="top"><a href="#ping-1">ping/1</a></td><td>Kick off an HTTP/2 PING.</td></tr><tr><td valign="top"><a href="#quiesce-1">quiesce/1</a></td><td>Quiesce a session.</td></tr><tr><td valign="top"><a href="#reconnect-1">reconnect/1</a></td><td>Immediately disconnect the session and reconnect.</td></tr><tr><td valign="top"><a href="#reconnect-2">reconnect/2</a></td><td>Immediately disconnect the session and reconnect after <code>Delay</code> ms.</td></tr><tr><td valign="top"><a href="#resume-1">resume/1</a></td><td>Resume a quiesced session.</td></tr><tr><td valign="top"><a href="#send-2">send/2</a></td><td>Send a notification specified by <code>Nf</code> with options <code>Opts</code>.</td></tr><tr><td valign="top"><a href="#send_cb-3">send_cb/3</a></td><td>Send a notification specified by <code>Nf</code> and a user-supplied callback
-function.</td></tr><tr><td valign="top"><a href="#start-2">start/2</a></td><td>Start a named session as described by the options <code>Opts</code>.</td></tr><tr><td valign="top"><a href="#start_link-2">start_link/2</a></td><td>Start a named session as described by the options <code>Opts</code>.</td></tr><tr><td valign="top"><a href="#stop-1">stop/1</a></td><td>Stop session.</td></tr><tr><td valign="top"><a href="#sync_send_callback-3">sync_send_callback/3</a></td><td>Standard sync callback function.</td></tr></table>
+function.</td></tr><tr><td valign="top"><a href="#server_mcs-1">server_mcs/1</a></td><td>Get MCS of connected server.</td></tr><tr><td valign="top"><a href="#start-2">start/2</a></td><td>Start a named session as described by the options <code>Opts</code>.</td></tr><tr><td valign="top"><a href="#start_link-2">start_link/2</a></td><td>Start a named session as described by the options <code>Opts</code>.</td></tr><tr><td valign="top"><a href="#stop-1">stop/1</a></td><td>Stop session.</td></tr><tr><td valign="top"><a href="#sync_reconnect-1">sync_reconnect/1</a></td><td>Immediately disconnect the session and reconnect, waiting until the
+actual reconnection completes before returning.</td></tr><tr><td valign="top"><a href="#sync_send_callback-3">sync_send_callback/3</a></td><td>Standard sync callback function.</td></tr></table>
 
 
 <a name="functions"></a>
@@ -875,7 +898,7 @@ quiesce(FsmRef) -&gt; Result
 
 <ul class="definitions"><li><code>FsmRef = <a href="#type-fsm_ref">fsm_ref()</a></code></li><li><code>Result = ok | {error, term()}</code></li></ul>
 
-Quiesce a session. This put sthe session into a mode
+Quiesce a session. This puts the session into a mode
 where all subsequent requests are rejected with `{error, quiesced}`.
 
 <a name="reconnect-1"></a>
@@ -933,6 +956,18 @@ send_cb(FsmRef, Opts, Callback) -&gt; Result
 Send a notification specified by `Nf` and a user-supplied callback
 function.
 
+<a name="server_mcs-1"></a>
+
+### server_mcs/1 ###
+
+<pre><code>
+server_mcs(FsmRef) -&gt; {ok, MCS} | {error, Reason}
+</code></pre>
+
+<ul class="definitions"><li><code>FsmRef = term()</code></li><li><code>MCS = non_neg_integer() | unlimited</code></li><li><code>Reason = term()</code></li></ul>
+
+Get MCS of connected server.
+
 <a name="start-2"></a>
 
 ### start/2 ###
@@ -973,6 +1008,15 @@ stop(FsmRef) -&gt; ok
 <ul class="definitions"><li><code>FsmRef = <a href="#type-fsm_ref">fsm_ref()</a></code></li></ul>
 
 Stop session.
+
+<a name="sync_reconnect-1"></a>
+
+### sync_reconnect/1 ###
+
+`sync_reconnect(FsmRef) -> any()`
+
+Immediately disconnect the session and reconnect, waiting until the
+actual reconnection completes before returning.
 
 <a name="sync_send_callback-3"></a>
 

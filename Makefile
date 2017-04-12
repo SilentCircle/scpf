@@ -19,6 +19,7 @@ REL_VSN = $(shell cut -f2 -d' ' $(PROD_REL_DIR)/releases/start_erl.data)
 REBAR_PROFILE ?= default
 EDOWN_TARGET ?= github
 EDOWN_TOP_LEVEL_README_URL ?= http://github.com/SilentCircle/scpf
+TEST_SPEC_NAME := scpf.test.spec
 
 THIS_MAKEFILE := $(lastword $(MAKEFILE_LIST))
 
@@ -98,6 +99,10 @@ rel: $(REBAR) manpage
 tar: $(REBAR) manpage
 	@$(REBAR) do clean, tar
 
+ct: $(REBAR)
+	echo > $(TEST_SPEC_NAME)
+	$(REBAR) do clean, ct --spec $(TEST_SPEC_NAME) --name ct1_scpf --setcookie scpf
+
 dialyzer: $(REBAR)
 	@$(REBAR) dialyzer
 
@@ -132,9 +137,6 @@ distclean: clean pkgclean
 
 docclean:
 	@rm -rf doc/man/scpf.1
-
-ct: $(REBAR)
-	$(REBAR) do clean, ct --name ct1_scpf --setcookie scpf
 
 install: prod_rel
 	@if [ ! -d $(PROD_REL_DIR) ]; then \

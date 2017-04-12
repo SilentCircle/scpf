@@ -3,8 +3,21 @@ scpf (2.0.3) unstable; urgency=medium
   * Version 2.0.3
 
     * Fix recovery when connection is broken.
+    * Improve performance under load
 
- -- Edwin Fine <efine@silentcircle.com>  Wed, 18 Jan 2017 18:25:42 -0500
+      - Decrease default burst size to 50
+      - Decrease default burst interval to 50 ms
+      - Update documentation to reflect changes
+      - Rewrite parts of apns_erlv3_session.erl to handle load and errors
+        better
+      - Modify CT tests to do a better job of flood testing (add
+        sync_flood_and_disconnect test)
+      - Modify CT tests to work with JWT auths, together with apns_erl_sim JWT
+        support and apns_tools JWT token generation
+      - Fix dialyzer warnings
+      - Various other small improvements
+
+ -- Edwin Fine <efine@silentcircle.com>  Wed, 12 Apr 2017 12:59:13 -0400
 
 scpf (2.0.2) unstable; urgency=medium
 

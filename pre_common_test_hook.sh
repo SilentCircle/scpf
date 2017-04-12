@@ -7,6 +7,11 @@ set -e
 NODE_NAME=$1; shift
 TEST_SPEC_NAME=$1; shift
 
+if [[ ! -f ${TEST_SPEC_NAME}.src ]]; then
+    echo $0: Expected template file ${TEST_SPEC_NAME}.src
+    exit 1
+fi
+
 TEST_SUITE_DATA=test/scpf_SUITE_data
 TEST_SUITE_DIR=_build/test/lib/scpf/${TEST_SUITE_DATA}
 
