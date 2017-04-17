@@ -13,7 +13,7 @@
   0},
  {<<"chatterbox">>,
   {git,"https://github.com/SilentCircle/chatterbox.git",
-       {ref,"c53363b8beb67521087b75b2835fd8f7b2a5d76f"}},
+       {ref,"9125caa55f651b7556858c79098188cb992168ad"}},
   0},
  {<<"edown">>,
   {git,"https://github.com/uwiger/edown.git",
