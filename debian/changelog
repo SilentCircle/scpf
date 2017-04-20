@@ -1,11 +1,10 @@
-scpf (2.0.3~rc2) unstable; urgency=medium
+scpf (2.0.3~rc3) unstable; urgency=medium
 
   * Version 2.0.3
 
     * Improve performance under load
-      - Merge in chatterbox PR #106
-        (https://github.com/joedevivo/chatterbox/pull/106) that fixes
-        unbounded memory growth
+      - Use SilentCircle chatterbox ETS table mod that addresses performance
+        and unbounded memory growth
       - Decrease default burst size to 50
       - Decrease default burst interval to 50 ms
       - Update documentation to reflect changes
@@ -19,7 +18,7 @@ scpf (2.0.3~rc2) unstable; urgency=medium
       - Various other small improvements
     * Fix recovery when connection is broken.
 
- -- Edwin Fine <efine@silentcircle.com>  Tue, 18 Apr 2017 13:22:18 -0400
+ -- Edwin Fine <efine@silentcircle.com>  Thu, 20 Apr 2017 09:54:36 -0400
 
 scpf (2.0.2) unstable; urgency=medium
 

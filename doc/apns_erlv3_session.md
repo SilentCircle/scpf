@@ -570,7 +570,7 @@ uuid_str() = <a href="apns_lib_http2.md#type-uuid_str">apns_lib_http2:uuid_str()
 
 
 <table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#async_send-2">async_send/2</a></td><td>Asynchronously send notification in <code>Opts</code>.</td></tr><tr><td valign="top"><a href="#async_send-3">async_send/3</a></td><td>Asynchronously send notification in <code>Opts</code>.</td></tr><tr><td valign="top"><a href="#async_send_callback-3">async_send_callback/3</a></td><td>Standard async callback function.</td></tr><tr><td valign="top"><a href="#async_send_cb-4">async_send_cb/4</a></td><td>Asynchronously send notification in <code>Opts</code> with user-defined
-callback function.</td></tr><tr><td valign="top"><a href="#disconnect-1">disconnect/1</a></td><td>Make session disconnect.</td></tr><tr><td valign="top"><a href="#get_state-1">get_state/1</a></td><td>Get the current state of the FSM.</td></tr><tr><td valign="top"><a href="#get_state_name-1">get_state_name/1</a></td><td>Get the name of the current state of the FSM.</td></tr><tr><td valign="top"><a href="#is_connected-1">is_connected/1</a></td><td>Return <code>true</code> if the session is connected, <code>false</code> otherwise.</td></tr><tr><td valign="top"><a href="#kick_sender-1">kick_sender/1</a></td><td>Wake up the sender to start sending queued notifications.</td></tr><tr><td valign="top"><a href="#ping-1">ping/1</a></td><td>Kick off an HTTP/2 PING.</td></tr><tr><td valign="top"><a href="#quiesce-1">quiesce/1</a></td><td>Quiesce a session.</td></tr><tr><td valign="top"><a href="#reconnect-1">reconnect/1</a></td><td>Immediately disconnect the session and reconnect.</td></tr><tr><td valign="top"><a href="#reconnect-2">reconnect/2</a></td><td>Immediately disconnect the session and reconnect after <code>Delay</code> ms.</td></tr><tr><td valign="top"><a href="#resume-1">resume/1</a></td><td>Resume a quiesced session.</td></tr><tr><td valign="top"><a href="#send-2">send/2</a></td><td>Send a notification specified by <code>Nf</code> with options <code>Opts</code>.</td></tr><tr><td valign="top"><a href="#send_cb-3">send_cb/3</a></td><td>Send a notification specified by <code>Nf</code> and a user-supplied callback
+callback function.</td></tr><tr><td valign="top"><a href="#conn_pid-1">conn_pid/1</a></td><td>Get connection PID of HTTP/2 client.</td></tr><tr><td valign="top"><a href="#disconnect-1">disconnect/1</a></td><td>Make session disconnect.</td></tr><tr><td valign="top"><a href="#get_state-1">get_state/1</a></td><td>Get the current state of the FSM.</td></tr><tr><td valign="top"><a href="#get_state_name-1">get_state_name/1</a></td><td>Get the name of the current state of the FSM.</td></tr><tr><td valign="top"><a href="#is_connected-1">is_connected/1</a></td><td>Return <code>true</code> if the session is connected, <code>false</code> otherwise.</td></tr><tr><td valign="top"><a href="#kick_sender-1">kick_sender/1</a></td><td>Wake up the sender to start sending queued notifications.</td></tr><tr><td valign="top"><a href="#ping-1">ping/1</a></td><td>Kick off an HTTP/2 PING.</td></tr><tr><td valign="top"><a href="#quiesce-1">quiesce/1</a></td><td>Quiesce a session.</td></tr><tr><td valign="top"><a href="#reconnect-1">reconnect/1</a></td><td>Immediately disconnect the session and reconnect.</td></tr><tr><td valign="top"><a href="#reconnect-2">reconnect/2</a></td><td>Immediately disconnect the session and reconnect after <code>Delay</code> ms.</td></tr><tr><td valign="top"><a href="#resume-1">resume/1</a></td><td>Resume a quiesced session.</td></tr><tr><td valign="top"><a href="#send-2">send/2</a></td><td>Send a notification specified by <code>Nf</code> with options <code>Opts</code>.</td></tr><tr><td valign="top"><a href="#send_cb-3">send_cb/3</a></td><td>Send a notification specified by <code>Nf</code> and a user-supplied callback
 function.</td></tr><tr><td valign="top"><a href="#server_mcs-1">server_mcs/1</a></td><td>Get MCS of connected server.</td></tr><tr><td valign="top"><a href="#start-2">start/2</a></td><td>Start a named session as described by the options <code>Opts</code>.</td></tr><tr><td valign="top"><a href="#start_link-2">start_link/2</a></td><td>Start a named session as described by the options <code>Opts</code>.</td></tr><tr><td valign="top"><a href="#stop-1">stop/1</a></td><td>Stop session.</td></tr><tr><td valign="top"><a href="#sync_reconnect-1">sync_reconnect/1</a></td><td>Immediately disconnect the session and reconnect, waiting until the
 actual reconnection completes before returning.</td></tr><tr><td valign="top"><a href="#sync_send_callback-3">sync_send_callback/3</a></td><td>Standard sync callback function.</td></tr></table>
 
@@ -827,6 +827,18 @@ See `apns_lib_http2:parsed_rsp()`.
   ]
 ```
 
+
+<a name="conn_pid-1"></a>
+
+### conn_pid/1 ###
+
+<pre><code>
+conn_pid(FsmRef) -&gt; {ok, pid()} | {error, not_connected}
+</code></pre>
+
+<ul class="definitions"><li><code>FsmRef = term()</code></li></ul>
+
+Get connection PID of HTTP/2 client.
 
 <a name="disconnect-1"></a>
 
