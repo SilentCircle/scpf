@@ -1,4 +1,4 @@
-scpf (2.0.3~rc3) unstable; urgency=medium
+scpf (2.0.3) stable; urgency=medium
 
   * Version 2.0.3
 
@@ -18,7 +18,7 @@ scpf (2.0.3~rc3) unstable; urgency=medium
       - Various other small improvements
     * Fix recovery when connection is broken.
 
- -- Edwin Fine <efine@silentcircle.com>  Thu, 20 Apr 2017 09:54:36 -0400
+ -- Edwin Fine <efine@silentcircle.com>  Sat, 22 Apr 2017 15:53:18 -0400
 
 scpf (2.0.2) unstable; urgency=medium
 

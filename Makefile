@@ -42,6 +42,20 @@ endif
 
 all: vsn compile
 
+# PKG_VERSION is based on the value in debian/changelog.
+# Example: "2.0.3"
+# This is what should be used for documentation versions.
+#
+# DCH_VERSION is the version that adds a timestamp and `git describe`
+# value to the PKG_VERSION.
+# Example: "2.0.3~rc3+0~20170420142017.108+jessie"
+#
+# This should be used to version scpf in the packaging system. That is,
+# it should be the output of `dpkg -l scpf` once it is installed. The
+# reason this numbering scheme is used is that it is Debian-compliant,
+# and compares correctly when used with `dpkg --compare-versions`, so
+# upgrades will be done correctly even if the base version numbers don't
+# change.
 include pkg.mk
 
 ifeq ($(wildcard APP_VERSION),APP_VERSION)
@@ -69,6 +83,7 @@ profiles:
 		 '{ok,C}=file:consult("rebar.config"),Ps=[P||{P,_}<-proplists:get_value(profiles,C)],io:format("Profiles: ~p~n",[Ps]),init:stop().'
 
 info:
+	@echo PKG_VERSION=$(PKG_VERSION)
 	@echo APP_VERSION=$(APP_VERSION)
 	@echo MARKDOWN_PGM=$(call get_prog,MARKDOWN_PGM)
 	@echo DCH_COMMENT=$(DCH_COMMENT)
@@ -118,7 +133,8 @@ doc/man/scpf.1: doc/man/README doc/man/scpf.1.template
 		pandoc -t man -s \
 		--data-dir=$(CURDIR) \
 		--template doc/man/scpf.1.template \
-		--variable version="scpf $(APP_VERSION)" \
+		--variable version="scpf $(PKG_VERSION)" \
+		--variable date="$(shell date -u)" \
 		-o $@
 
 clean: $(REBAR) docclean
