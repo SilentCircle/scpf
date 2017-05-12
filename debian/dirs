@@ -9,3 +9,4 @@ var/run/scpf
 var/lib/scpf
 var/log/scpf
 var/log/scpf/sasl
+var/log/scpf/web
