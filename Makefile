@@ -58,12 +58,7 @@ all: vsn compile
 # change.
 include pkg.mk
 
-ifeq ($(wildcard APP_VERSION),APP_VERSION)
-APP_VERSION = $(shell cat APP_VERSION)
-else
 APP_VERSION = $(DCH_VERSION)
-endif
-
 MARKDOWN_PGM := pandoc
 
 vsn:
@@ -121,7 +116,7 @@ ct: $(REBAR)
 dialyzer: $(REBAR)
 	@$(REBAR) dialyzer
 
-doc: $(REBAR) compile manpage
+doc: $(REBAR) vsn compile manpage
 	@sed -r -f markedoc.sed	doc/README-src.md > doc/overview.edoc
 	$(REBAR) edoc EDOWN_TARGET=$(EDOWN_TARGET) EDOWN_TOP_LEVEL_README_URL=$(EDOWN_TOP_LEVEL_README_URL)
 
@@ -152,6 +147,7 @@ distclean: clean pkgclean
 	@rm -f *.log
 
 docclean:
+	@rm -f APP_VERSION
 	@rm -rf doc/man/scpf.1
 
 install: prod_rel
