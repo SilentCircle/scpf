@@ -20,8 +20,15 @@ Depends:
     adduser,
     logrotate,
     sudo,
-    ${erlang:Depends},
-    ${erlang-abi:Depends},
+    ${erlang-base:Depends},
+    ${erlang-asn1:Depends},
+    ${erlang-crypto:Depends},
+    ${erlang-inets:Depends},
+    ${erlang-mnesia:Depends},
+    ${erlang-public-key:Depends},
+    ${erlang-ssl:Depends},
+    ${erlang-syntax-tools:Depends},
+    ${erlang-xmerl:Depends},
     ${shlibs:Depends},
     ${misc:Depends}
 Description: scpf is the Silent Circle Push Framework application, written in Erlang.

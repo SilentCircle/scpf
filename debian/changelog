@@ -1,3 +1,12 @@
+scpf (2.0.4~dev1) UNRELEASED; urgency=medium
+
+  * Version 2.0.4 (dev1)
+
+    * Remove unnecessary Erlang dependencies from Debian install.
+    * Fix default config and other files to support 'make run'.
+
+ -- Edwin Fine <efine@silentcircle.com>  Wed, 17 May 2017 14:43:08 -0400
+
 scpf (2.0.3) stable; urgency=medium
 
   * Version 2.0.3
