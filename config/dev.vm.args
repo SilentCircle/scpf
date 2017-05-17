@@ -28,4 +28,4 @@
 
 ## Set firewall window
 -kernel inet_dist_listen_min 40000 inet_dist_listen_max 40999
--mnesia dir "{{ mnesia_dir }}"
+-mnesia dir '"{{ mnesia_dir }}"'
