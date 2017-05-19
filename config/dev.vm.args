@@ -12,15 +12,18 @@
 
 ## Enable kernel poll and a few async threads
 +K true
-+A 5
++A 20
 
 ## Treat error_logger warnings as warnings
 +W w
 
-## Increase number of concurrent ports/sockets
--env ERL_MAX_PORTS 4096
+## Increase max processes
++P 1000000
 
--env WEBMACHINE_IP ::
+## Increase number of concurrent ports/sockets
++Q 120000
+
+-env WEBMACHINE_IP 0.0.0.0
 -env WEBMACHINE_PORT 8765
 
 ## Tweak GC to run more often
