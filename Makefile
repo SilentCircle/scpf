@@ -23,7 +23,7 @@ TEST_SPEC_NAME := scpf.test.spec
 
 THIS_MAKEFILE := $(lastword $(MAKEFILE_LIST))
 
-$(info $(THIS_MAKEFILE) is using REBAR_PROFILE=$(REBAR_PROFILE))
+$(warning $(THIS_MAKEFILE) is using REBAR_PROFILE=$(REBAR_PROFILE))
 
 REBAR3_URL = https://s3.amazonaws.com/rebar3/rebar3
 
@@ -58,13 +58,15 @@ all: vsn compile
 # change.
 include pkg.mk
 
-ifeq ($(wildcard APP_VERSION),APP_VERSION)
-APP_VERSION = $(shell cat APP_VERSION)
-else
 APP_VERSION = $(DCH_VERSION)
-endif
 
 MARKDOWN_PGM := pandoc
+
+pkg_vsn:
+	@echo $(PKG_VERSION)
+
+dch_vsn:
+	@echo $(DCH_VERSION)
 
 vsn:
 	@if [ ! -f APP_VERSION ]; then echo $(APP_VERSION) > APP_VERSION; fi
