@@ -106,7 +106,7 @@ tar: $(REBAR) manpage
 	@$(REBAR) do clean, tar
 
 ct: $(REBAR)
-	$(REBAR) do clean, ct --name ct1_scpf --setcookie scpf --readable --cover --verbose
+	$(REBAR) do clean, ct --readable
 
 dialyzer: $(REBAR)
 	@$(REBAR) dialyzer
