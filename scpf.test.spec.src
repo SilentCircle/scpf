@@ -4,7 +4,6 @@
 
 {node, ct1, '{{NEEDFULLNODENAME}}'}.
 {config, ["test/test.config"]}.
-%{suites, "_build/test/lib/scpf/test", [scpf_SUITE]}.
 {suites, "test", [scpf_SUITE]}.
 
 %% ex: ft=erlang ts=4 sts=4 sw=4 et:

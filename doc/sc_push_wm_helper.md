@@ -260,7 +260,7 @@ to be returned.</td></tr><tr><td valign="top"><a href="#malformed_err-2">malform
 
 ### check_reg_lookup/1 ###
 
-`check_reg_lookup(Props) -> any()`
+`check_reg_lookup(Error) -> any()`
 
 Check the return of the sc_push_reg_api lookup
 

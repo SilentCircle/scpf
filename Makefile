@@ -17,10 +17,6 @@ PROD_REL_DIR := ./_build/prod/rel/$(PACKAGE)
 REL_VSN = $(shell cut -f2 -d' ' $(PROD_REL_DIR)/releases/start_erl.data)
 
 REBAR_PROFILE ?= default
-EDOWN_TARGET ?= github
-EDOWN_TOP_LEVEL_README_URL ?= http://github.com/SilentCircle/scpf
-TEST_SPEC_NAME := scpf.test.spec
-
 THIS_MAKEFILE := $(lastword $(MAKEFILE_LIST))
 
 $(info $(THIS_MAKEFILE) is using REBAR_PROFILE=$(REBAR_PROFILE))
@@ -110,15 +106,13 @@ tar: $(REBAR) manpage
 	@$(REBAR) do clean, tar
 
 ct: $(REBAR)
-	echo > $(TEST_SPEC_NAME)
-	$(REBAR) do clean, ct --spec $(TEST_SPEC_NAME) --name ct1_scpf --setcookie scpf
+	$(REBAR) do clean, ct --readable
 
 dialyzer: $(REBAR)
 	@$(REBAR) dialyzer
 
 doc: $(REBAR) vsn compile manpage
-	@sed -r -f markedoc.sed	doc/README-src.md > doc/overview.edoc
-	$(REBAR) edoc EDOWN_TARGET=$(EDOWN_TARGET) EDOWN_TOP_LEVEL_README_URL=$(EDOWN_TOP_LEVEL_README_URL)
+	$(REBAR) edoc # EDOWN_TARGET=github|stash EDOWN_TOP_LEVEL_README_URL=http://example.com/scpf/README.md
 
 manpage: doc/man/scpf.1
 
@@ -165,7 +159,6 @@ install: prod_rel
 	cp -R $(PROD_REL_DIR)/releases $(PKG_LIB_DIR)
 	cp -R $(PROD_REL_DIR)/$(ERTS_VSN) $(PKG_LIB_DIR)/
 	chmod 0755 $(PKG_LIB_DIR)/$(ERTS_VSN)/bin/*
-	chmod 0755 $(PKG_LIB_DIR)/bin/mnesia_init
 	chmod 0755 $(PKG_LIB_DIR)/bin/nodetool
 	chmod 0755 $(PKG_LIB_DIR)/bin/$(PACKAGE)*
 	install -m644 MANIFEST $(PKG_LIB_DIR)/MANIFEST.txt

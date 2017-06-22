@@ -272,13 +272,6 @@ elif [ ! -w $MNESIA_DIR ]; then # Make sure the directory is writable
     die "Mnesia directory $MNESIA_DIR not writable by `id -un`."
 fi
 
-# Setup command to initialize Mnesia schema
-init_schema() {
-    if ! "$ERTS_DIR/bin/escript" "$ROOTDIR/bin/mnesia_init" "$NAME_TYPE" "$NAME" "$MNESIA_DIR"; then
-        die "Mnesia schema creation failed!"
-    fi
-}
-
 # Check the first argument for instructions
 case "$1" in
     start|start_boot)
@@ -291,7 +284,6 @@ case "$1" in
 
         # Save this for later.
         CMD=$1
-        init_schema
 
         case "$1" in
             start)
@@ -444,8 +436,6 @@ case "$1" in
                 ;;
         esac
 
-        init_schema
-
         # Setup beam-required vars
         EMU="beam"
         PROGNAME="${0#*/}"
@@ -482,8 +472,6 @@ case "$1" in
             echo "Node is already running!"
             exit 0
         fi
-
-        init_schema
 
         # start up the release in the foreground for use by runit
         # or other supervision services

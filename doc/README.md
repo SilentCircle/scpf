@@ -4,7 +4,7 @@
 
 Copyright (c) 2016 Silent Circle
 
-__Version:__ 2.0.4~dev1+0~20170517201247.0.gdc6a720
+__Version:__ 2.0.4~dev1+0~20170712031401.10.g34f0cb2
 
 __Authors:__ Edwin Fine ([`efine@silentcircle.com`](mailto:efine@silentcircle.com)).
 
@@ -1105,6 +1105,8 @@ function url(tag) { var o=document.getElementById(tag); return o ? o.href : '#'+
 <tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_lib_sup.md" class="module">sc_push_lib_sup</a></td></tr>
 <tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_reg_api.md" class="module">sc_push_reg_api</a></td></tr>
 <tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_reg_db.md" class="module">sc_push_reg_db</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_reg_db_mnesia.md" class="module">sc_push_reg_db_mnesia</a></td></tr>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_reg_db_postgres.md" class="module">sc_push_reg_db_postgres</a></td></tr>
 <tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_reg_resource.md" class="module">sc_push_reg_resource</a></td></tr>
 <tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_reg_wm_device.md" class="module">sc_push_reg_wm_device</a></td></tr>
 <tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_push_reg_wm_service.md" class="module">sc_push_reg_wm_service</a></td></tr>
@@ -1127,6 +1129,5 @@ function url(tag) { var o=document.getElementById(tag); return o ? o.href : '#'+
 <tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_types.md" class="module">sc_types</a></td></tr>
 <tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_util.md" class="module">sc_util</a></td></tr>
 <tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_util_app.md" class="module">sc_util_app</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_util_srv.md" class="module">sc_util_srv</a></td></tr>
-<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/scpf.md" class="module">scpf</a></td></tr></table>
+<tr><td><a href="http://github.com/SilentCircle/scpf/blob/master/doc/sc_util_srv.md" class="module">sc_util_srv</a></td></tr></table>
 

@@ -200,9 +200,19 @@ SetCTSpec = fun(NewVal, CTOpts) -> KeyStore(spec, CTOpts, NewVal) end.
 
 GetFullHostname = fun() -> net_adm:localhost() end.
 
-MakeLongNodeS = fun(NodeName, HostName) ->
-                        NodeName ++ "@" ++ HostName
+MakeLongNodeB = fun(NodeName, HostName) ->
+                        list_to_binary([NodeName, $@, HostName])
                 end.
+
+LONG_NODE_NAME_BIN = fun() ->
+                             HostN = GetFullHostname(),
+                             MakeLongNodeB("ct1_scpf", HostN)
+                     end.
+
+LONG_NODE_NAME_ATOM =
+    fun() ->
+            list_to_atom(binary_to_list(LONG_NODE_NAME_BIN()))
+    end.
 
 ConfigureCTOpts =
      fun(Config) ->
@@ -217,43 +227,44 @@ ConfigureCTOpts =
              SetCTOpts(CTOpts, Config)
      end.
 
-%% This function rewrites {pre_hooks, [{ct, "./pre_common_test_hook.sh"}]}.
+%% This function generates the test spec file needed by common test.
+%% It expects a file to exist, $SPEC_NAME.src, where $SPEC_NAME
+%% is defined as returned by ConfigureCTOpts.
 %%
-%% pre_common_test_hook.sh needs two parameters, one of which is
-%% a long node name. Since the host name cannot be known in advance,
-%% this function synthesizes the full node name from the host name
-%% and the hard-coded string "ct1_scpf". It then replaces the ct pre_hooks
-%% part of rebar.config that calls
-%% pre_common_test_hook.sh with a call
+%% $SPEC_NAME.src must contain a stanza as follows:
 %%
-%% ./pre_common_test_hook.sh <nodename> <ct-spec-file-name>
+%% {node, ct1, '{{NEEDFULLNODENAME}}'}.
 %%
-%% Note that it will only supersede the ct pre_hook if
+%% This function replaces {{NEEDFULLNODENAME}} with the long node
+%% name of the node running rebar3 and saves the file as $SPECNAME.
 %%
-%% 1. The pre_hook is not there at all, or
-%% 2. The pre_hook is there, but consists only of the literal string
-%%    "./pre_common_test_hook.sh"/
-%% It will fail if there is no ct_spec!
-ConfigurePreHooks =
+GenerateTestSpec =
     fun(Config0) ->
+            Template = <<"{{NEEDFULLNODENAME}}">>,
             Config = ConfigureCTOpts(Config0),
             CTSpec = GetCTSpec(GetCTOpts(Config)),
             true = (CTSpec /= undefined),
-            Script = "./pre_common_test_hook.sh",
-            PreHooks = GetPreHooks(Config),
-            HostN = GetFullHostname(),
-            NodeName = MakeLongNodeS("ct1_scpf", HostN),
-            CTHook = case GetCTHook(PreHooks) of
-                         S when S == undefined orelse
-                                S == Script ->
-                             string:join([Script,
-                                          NodeName,
-                                          CTSpec], " ");
-                         S ->
-                             S
-                     end,
-            PreHooks1 = SetCTHook(CTHook, PreHooks),
-            Return(SetPreHooks(PreHooks1, Config))
+            CTSpecSrc = CTSpec ++ ".src",
+            Res = case file:read_file(CTSpecSrc) of
+                {ok, Spec0} ->
+                    true = (binary:match(Spec0, Template) /= nomatch),
+                    Spec = binary:replace(Spec0, Template, LONG_NODE_NAME_BIN()),
+                    ok = file:write_file(CTSpec, Spec),
+                    Return(Config);
+                Error ->
+                    Msg("Error opening ~s: ~p\n", [CTSpecSrc, Error]),
+                    Return(undefined)
+            end,
+            Dmsg("GenerateTestSpec returned ~p\n", [Res]),
+            Res
+    end.
+
+UpsertDistNode =
+    fun(Config, LongNodeName, Cookie) when is_atom(LongNodeName),
+                                           is_atom(Cookie) ->
+            DistNode = {dist_node, [{name, LongNodeName}, {setcookie, Cookie}]},
+            NewConfig = lists:keystore(dist_node, 1, Config, DistNode),
+            Return(NewConfig)
     end.
 
 %% Return {'Some', 'release'} if env var SCPF_OVERRIDE_REL exists, using
@@ -354,6 +365,11 @@ ConfigEdocVsn =
                     end)
     end.
 
+ConfigDistNode =
+    fun(Cfg) ->
+            UpsertDistNode(Cfg, LONG_NODE_NAME_ATOM(), 'scpf')
+    end.
+
 %% Apply chain of modifications to CONFIG
 {CONFIG1, _} = lists:foldl(
                  fun(ModCfg, {Cfg, N}) when is_function(ModCfg, 1) ->
@@ -369,11 +385,12 @@ ConfigEdocVsn =
                                end,
                          {Acc, N + 1}
                  end, {CONFIG, 1}, [
-                                    ConfigurePreHooks,
+                                    GenerateTestSpec,
                                     MaybeOverride,
                                     ConfigEdownTarget,
                                     ConfigEdownUrl,
-                                    ConfigEdocVsn
+                                    ConfigEdocVsn,
+                                    ConfigDistNode
                                    ]
                 ).
 

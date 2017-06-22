@@ -1,11 +1,23 @@
-scpf (2.0.4~dev1) UNRELEASED; urgency=medium
+scpf (2.0.4~dev2) unstable; urgency=medium
 
-  * Version 2.0.4 (dev1)
+  * Version 2.0.4 (dev2)
 
     * Remove unnecessary Erlang dependencies from Debian install.
     * Fix default config and other files to support 'make run'.
+    * Support Postgres
+      - Update rebar.lock to use postgres-supporting commits in sc_push,
+        sc_push_lib, and apns_erlv3 repos.
+      - Remove apns_erl (old APNS binary module) from app.
+      - Add raven_erlang.
+      - Add runtime_tools. This allows us to run observer on another node and
+        connect to scpf.
+      - Upgrade to rebar3 3.4.1.
+      - Modify test suite to test both Mnesia and Postgres.
+      - Fix some issues related to the test suite and CT in general.
+      - Modify config files to reflect Postgres and pool settings.
+      - Update docs.
 
- -- Edwin Fine <efine@silentcircle.com>  Wed, 17 May 2017 14:43:08 -0400
+ -- Edwin Fine <efine@silentcircle.com>  Tue, 11 Jul 2017 23:32:42 -0400
 
 scpf (2.0.3) stable; urgency=medium
 

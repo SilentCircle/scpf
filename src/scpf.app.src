@@ -5,7 +5,6 @@
         {registered, []},
         {applications, [
                 sc_push,
-                apns_erl,
                 apns_erlv3,
                 gcm_erl,
                 raven_erlang
