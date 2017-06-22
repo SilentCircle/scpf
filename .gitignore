@@ -32,3 +32,7 @@ certs/
 sasl_error.log
 INSTALL_DIR
 _debian_build/
+scpf.test.spec
+test/scpf_SUITE_data/*Fake*.pem
+CONFIG
+_dev_package
