@@ -35,12 +35,26 @@ suite() -> [
             {require, gcm_sim_node},
             {require, gcm_sim_config},
             {require, apnsv3_sim_node},
-            {require, apnsv3_sim_config}
+            {require, apnsv3_sim_config},
+            {require, lager},
+            {require, databases},
+            {require, connect_info}
            ].
 
 %%--------------------------------------------------------------------
 init_per_suite(Config) ->
-    set_mnesia_dir(Config),
+    Sasl = ct:get_config(sasl),
+    ct:pal("SASL: ~p~n", [Sasl]),
+
+    set_all_env(sasl, Sasl),
+    ensure_started(sasl),
+
+    Databases = ct:get_config(databases),
+    ct:pal("Databases: ~p~n", [Databases]),
+
+    ConnectInfo = ct:get_config(connect_info),
+    ct:pal("connect_info config: ~p~n", [ConnectInfo]),
+
     Cookie = "scpf",
     {ApnsV3SimNode, ApnsV3SimCfg} = get_sim_config(apnsv3_sim_config, Config),
     {GcmSimNode, GcmSimCfg} = get_sim_config(gcm_sim_config, Config),
@@ -64,7 +78,9 @@ init_per_suite(Config) ->
                          {apnsv3_sim_config, ApnsV3SimCfg},
                          {gcm_sim_node, GcmSimNode},
                          {gcm_sim_config, GcmSimCfg},
-                         {registrations, Registrations}]
+                         {registrations, Registrations},
+                         {databases, Databases},
+                         {connect_info, ConnectInfo}]
                ).
 
 %%--------------------------------------------------------------------
@@ -76,6 +92,25 @@ end_per_suite(Config) ->
     ok.
 
 %%--------------------------------------------------------------------
+init_per_group(Group, Config) when Group =:= internal_db;
+                                   Group =:= external_db ->
+    ct:pal("===== Running test group ~p =====", [Group]),
+    DBMap = req_val(databases, Config),
+    DBInfo = maps:get(Group, DBMap),
+    NewConfig = lists:keystore(dbinfo, 1, Config, {dbinfo, DBInfo}),
+    ok = application:set_env(sc_push_lib, db_pools, db_pools(DBInfo, NewConfig)),
+    {ok, DbPools} = application:get_env(sc_push_lib, db_pools),
+    ct:pal("DbPools: ~p", [DbPools]),
+
+    case check_db_availability(NewConfig) of
+        ok ->
+            NewConfig;
+        Error ->
+            Reason = lists:flatten(
+                       io_lib:format("Cannot communicate with ~p,"
+                                     " error: ~p", [Group, Error])),
+            {skip, Reason}
+    end;
 init_per_group(_GroupName, Config) ->
     Config.
 
@@ -94,22 +129,19 @@ end_per_testcase(_Case, Config) ->
 %%--------------------------------------------------------------------
 groups() ->
     [
-        {
-            service,
-            [],
-            [
-                {group, clients}
-            ]
-        },
-        {
-            clients,
-            [],
-            [
-                send_msg_test,
-                send_msg_fail_test,
-                send_msg_no_reg_test
-            ]
-        }
+     {service, [], [
+                    {internal_db, [], service_test_groups()},
+                    {external_db, [], service_test_groups()}
+                   ]
+     }
+    ].
+
+%%--------------------------------------------------------------------
+service_test_groups() ->
+    [
+     send_msg_test,
+     send_msg_fail_test,
+     send_msg_no_reg_test
     ].
 
 %%--------------------------------------------------------------------
@@ -207,8 +239,7 @@ send_msg_no_reg_test(Config) ->
 %%====================================================================
 init_per_testcase_common(Config) ->
     (catch end_per_testcase_common(Config)),
-    ok = mnesia:create_schema([node()]),
-    ok = mnesia:start(),
+    db_create(Config),
     Apps = [sc_push, gcm_erl, apns_erlv3],
     AppList = lists:foldl(
                 fun(App, Acc) ->
@@ -222,8 +253,7 @@ init_per_testcase_common(Config) ->
 end_per_testcase_common(Config) ->
     Apps = lists:reverse(pv(started_apps, Config, [])),
     _ = [ok = application:stop(App) || App <- Apps],
-    mnesia:stop(),
-    ok = mnesia:delete_schema([node()]),
+    db_destroy(Config),
     lists:keydelete(started_apps, 1, Config).
 
 %%--------------------------------------------------------------------
@@ -257,49 +287,32 @@ deregister_id(RegPL) ->
 %%====================================================================
 %% Lager support
 %%====================================================================
-lager_config(Config) ->
+lager_config(Config, RawLagerConfig) ->
     PrivDir = req_val(priv_dir, Config), % Standard CT variable
-    [
-     {handlers,
-      [
-       {lager_console_backend, debug},
-       {lager_file_backend, [{file, filename:join(PrivDir, "log/error.log")},
-                             {level, error},
-                             {size, 10485760},
-                             {date, "$D0"},
-                             {count, 5}]},
-       {lager_file_backend, [{file, filename:join(PrivDir, "log/console.log")},
-                             {level, debug },
-                             {size, 10485760},
-                             {date, "$D0"},
-                             {count, 5}
-                            ]
-       }
-      ]
-     },
-     %% Whether to write a crash log, and where. Undefined means no crash logger.
-     {crash_log, filename:join(PrivDir, "log/crash.log")},
-     %% Maximum size in bytes of events in the crash log - defaults to 65536
-     {crash_log_msg_size, 65536},
-     %% Maximum size of the crash log in bytes, before its rotated, set
-     %% to 0 to disable rotation - default is 0
-     {crash_log_size, 10485760},
-     %% What time to rotate the crash log - default is no time
-     %% rotation. See the README for a description of this format.
-     {crash_log_date, "$D0"},
-     %% Number of rotated crash logs to keep, 0 means keep only the
-     %% current one - default is 0
-     {crash_log_count, 5},
-     %% Whether to redirect error_logger messages into lager - defaults to true
-     {error_logger_redirect, true}
-    ].
+
+    Replacements = [
+                    {error_log_file, filename:join(PrivDir, "error.log")},
+                    {console_log_file, filename:join(PrivDir, "console.log")},
+                    {crash_log_file, filename:join(PrivDir, "crash.log")}
+                   ],
+
+    replace_template_vars(RawLagerConfig, Replacements).
+
+replace_template_vars(RawLagerConfig, Replacements) ->
+    Ctx = dict:from_list(Replacements),
+    Str = lists:flatten(io_lib:fwrite("~1000p~s", [RawLagerConfig, "."])),
+    SConfig = mustache:render(Str, Ctx),
+    {ok, Tokens, _} = erl_scan:string(SConfig),
+    {ok, LagerConfig} = erl_parse:parse_term(Tokens),
+    LagerConfig.
 
 %%====================================================================
 %% General helper functions
 %%====================================================================
 start_per_suite_apps(Config) ->
     Apps = [lager, ssl],
-    set_env(lager, lager_config(Config)),
+    Lager = lager_config(Config, ct:get_config(lager)),
+    set_env(lager, Lager),
     Fun = fun(App, Acc) ->
                   {ok, L} = application:ensure_all_started(App),
                   Acc ++ L
@@ -325,3 +338,101 @@ get_service_properties(Service, [_|_]=RegPLs) when is_atom(Service) ->
         L ->
             ct:fail({unexpected_response, L})
     end.
+
+%%--------------------------------------------------------------------
+db_create(Config) ->
+    DBInfo = req_val(dbinfo, Config),
+    DB = maps:get(db, DBInfo),
+    db_create(DB, DBInfo, Config).
+
+db_create(mnesia, _DBInfo, Config) ->
+    PrivDir = req_val(priv_dir, Config), % Standard CT variable
+    MnesiaDir = filename:join(PrivDir, "mnesia"),
+    ok = application:set_env(mnesia, dir, MnesiaDir),
+    db_destroy(mnesia, _DBInfo, Config),
+    ok = mnesia:create_schema([node()]);
+db_create(DB, DBInfo, Config) ->
+    db_create(mnesia, DBInfo, Config),
+    clear_external_db(DB, DBInfo, Config).
+
+%%--------------------------------------------------------------------
+db_destroy(Config) ->
+    DBInfo = req_val(dbinfo, Config),
+    DB = maps:get(db, DBInfo),
+    db_destroy(DB, DBInfo, Config).
+
+db_destroy(mnesia, _DBInfo, _Config) ->
+    mnesia:stop(),
+    ok = mnesia:delete_schema([node()]);
+db_destroy(DB, DBInfo, Config) ->
+    db_destroy(mnesia, DBInfo, Config),
+    clear_external_db(DB, DBInfo, Config).
+
+%%--------------------------------------------------------------------
+clear_external_db(postgres=EDB, _DBInfo, Config) ->
+    ConnParams = db_config(EDB, Config),
+    Tables = ["scpf.push_tokens"],
+    case epgsql:connect(ConnParams) of
+        {ok, Conn} ->
+            lists:foreach(
+              fun(Table) ->
+                      {ok, _} = epgsql:squery(Conn, "delete from " ++ Table)
+              end, Tables),
+            ok = epgsql:close(Conn);
+        Error ->
+            ct:fail("~p error: ~p", [EDB, Error])
+    end.
+
+%%--------------------------------------------------------------------
+check_db_availability(Config) ->
+    DBInfo = req_val(dbinfo, Config),
+    DB = maps:get(db, DBInfo),
+    check_db_availability(DB, Config).
+
+check_db_availability(mnesia, _Config) ->
+    ok;
+check_db_availability(postgres, Config) ->
+    ConnParams = db_config(postgres, Config),
+    try epgsql:connect(ConnParams) of
+        {ok, Conn} ->
+            ok = epgsql:close(Conn);
+        Error ->
+            Error
+    catch
+        _:Reason ->
+            {error, Reason}
+    end.
+
+%%--------------------------------------------------------------------
+db_pools(#{db := DB, mod := DBMod}, Config) ->
+    [
+     {sc_push_reg_pool, % name
+      [ % sizeargs
+       {size, 10},
+       {max_overflow, 20}
+      ],
+      [ % workerargs
+       {db_mod, DBMod},
+       {db_config, db_config(DB, Config)}
+      ]}
+    ].
+
+%%--------------------------------------------------------------------
+db_config(DB, Config) ->
+    maps:get(DB, req_val(connect_info, Config), []).
+
+%%--------------------------------------------------------------------
+set_all_env(App, Props) ->
+    lists:foreach(fun({K, V}) ->
+                          ok = application:set_env(App, K, V)
+                  end, Props).
+
+%%--------------------------------------------------------------------
+ensure_started(App) ->
+    case application:start(App) of
+        ok ->
+            ok;
+        {error, {already_started, App}} ->
+            ok
+    end.
+
