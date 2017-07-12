@@ -221,6 +221,9 @@ Initialize the database connection.
 Return an opaque context for use with the other API calls.
 
 
+#### <a name="Parameters">Parameters</a> ####
+
+
 
 <dt><code>Config</code></dt>
 
@@ -229,18 +232,18 @@ Return an opaque context for use with the other API calls.
 
 <dd>This may be provided one of the following formats:
 <ul>
-<li><em>Simple format</em>A property list containing at least
-the following properties (plus any others supported by
+<li><b>Simple format</b>: A property list containing at
+least the following properties (plus any others supported by
 <code>epgsql</code>, to which the property list is passed directly):
 <dl>
-<dt><code>hostname :: string()</code></dt><dd>Postgres host name</dd>
+<dt><code>host :: string()</code></dt><dd>Postgres host name</dd>
 <dt><code>database :: string()</code></dt><dd>Database name</dd>
 <dt><code>username :: string()</code></dt><dd>User (role) name</dd>
 <dt><code>password :: string()</code></dt><dd>User/role password</dd>
 </dl>
 </li>
-<li><em>Extended format</em>A map with the following keys and
-values:
+<li><b>Extended format</b>: A map with the following keys
+and values:
 <dl>
 <dt><code>connection :: proplist()</code> (required)</dt>
 <dd>A property list as defined in the <em>Simple
@@ -278,7 +281,7 @@ following properties:
 
 ```
   Config = [
-   {hostname, "db.example.com"},
+   {host, "db.example.com"},
    {database, "mydb"},
    {username, "mydbuser"},
    {password, "mydbpasswd"}
@@ -290,7 +293,7 @@ following properties:
 ```
   Config = #{
     connection => [
-                   {hostname, "db.example.com"},
+                   {host, "db.example.com"},
                    {database, "mydb"},
                    {username, "mydbuser"},
                    {password, "mydbpasswd"}
@@ -303,7 +306,7 @@ following properties:
 ```
   Config = #{
     connection => [
-                   {hostname, "db.example.com"},
+                   {host, "db.example.com"},
                    {database, "mydb"},
                    {username, "mydbuser"},
                    {password, "mydbpasswd"}

@@ -1,3 +1,10 @@
+scpf (2.0.4~dev4) unstable; urgency=medium
+
+  * Version 2.0.4 (dev4)
+    * Fix Postgres-related doc, tests, config: "hostname: should be "host"
+
+ -- Edwin Fine <efine@silentcircle.com>  Thu, 13 Jul 2017 11:20:16 -0400
+
 scpf (2.0.4~dev3) unstable; urgency=medium
 
   * Version 2.0.4 (dev3)
