@@ -53,7 +53,7 @@ This is currently a no-op and returns an empty list.
 db_init(Config) -&gt; {ok, Context} | {error, Reason}
 </code></pre>
 
-<ul class="definitions"><li><code>Config = <a href="proplists.md#type-proplist">proplists:proplist()</a></code></li><li><code>Context = <a href="#type-ctx">ctx()</a></code></li><li><code>Reason = term()</code></li></ul>
+<ul class="definitions"><li><code>Config = #{} | <a href="proplists.md#type-proplist">proplists:proplist()</a></code></li><li><code>Context = <a href="#type-ctx">ctx()</a></code></li><li><code>Reason = term()</code></li></ul>
 
 Initialize the database connection.
 

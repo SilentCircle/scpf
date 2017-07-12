@@ -21,7 +21,7 @@
   1},
  {<<"gcm_erl">>,
   {git,"https://github.com/SilentCircle/gcm_erl.git",
-       {ref,"6021d298013b9fd70c5d5ac6907abaa38305f36f"}},
+       {ref,"082d3c27b3c953030a0de2d94d168979aa745efd"}},
   0},
  {<<"goldrush">>,
   {git,"git://github.com/DeadZen/goldrush.git",
@@ -40,7 +40,7 @@
  {<<"mochiweb">>,
   {git,"git://github.com/basho/mochiweb.git",
        {ref,"ade2a9b29a11034eb550c1d79b4f991bf5ca05ba"}},
-  2},
+  1},
  {<<"parse_trans">>,
   {git,"https://github.com/uwiger/parse_trans.git",
        {ref,"6f3645afb43c7c57d61b54ef59aecab288ce1013"}},
@@ -59,11 +59,11 @@
   0},
  {<<"sc_push">>,
   {git,"https://github.com/SilentCircle/sc_push.git",
-       {ref,"170a57180a933b431d8b98010a7aab38518066f0"}},
+       {ref,"61c0f3d9b065810e83eebe26ccadbc1e1f812466"}},
   0},
  {<<"sc_push_lib">>,
   {git,"https://github.com/SilentCircle/sc_push_lib.git",
-       {ref,"526aaba607c62292fe3e255bcb6625d670448689"}},
+       {ref,"b122dfddc25d1c31441553d9a51879be5f8a1682"}},
   0},
  {<<"sc_util">>,
   {git,"https://github.com/SilentCircle/sc_util.git",
@@ -76,7 +76,7 @@
  {<<"webmachine">>,
   {git,"https://github.com/SilentCircle/webmachine.git",
        {ref,"06a880f576692d2a07dfd73b6db189b2cb93fbdb"}},
-  1}]}.
+  0}]}.
 [
 {pkg_hash,[
  {<<"hpack">>, <<"17670F83FF984AE6CD74B1C456EDDE906D27FF013740EE4D9EFAA4F1BF999633">>},

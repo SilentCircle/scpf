@@ -1,3 +1,10 @@
+scpf (2.0.4~dev3) unstable; urgency=medium
+
+  * Version 2.0.4 (dev3)
+      * Support user-defined Postgres push token table name and schema.
+
+ -- Edwin Fine <efine@silentcircle.com>  Wed, 12 Jul 2017 17:46:58 -0400
+
 scpf (2.0.4~dev2) unstable; urgency=medium
 
   * Version 2.0.4 (dev2)

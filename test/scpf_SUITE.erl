@@ -370,7 +370,7 @@ db_destroy(DB, DBInfo, Config) ->
 
 %%--------------------------------------------------------------------
 clear_external_db(postgres=EDB, _DBInfo, Config) ->
-    ConnParams = db_config(EDB, Config),
+    ConnParams = db_conn_params(postgres, Config),
     Tables = ["scpf.push_tokens"],
     case epgsql:connect(ConnParams) of
         {ok, Conn} ->
@@ -392,7 +392,7 @@ check_db_availability(Config) ->
 check_db_availability(mnesia, _Config) ->
     ok;
 check_db_availability(postgres, Config) ->
-    ConnParams = db_config(postgres, Config),
+    ConnParams = db_conn_params(postgres, Config),
     try epgsql:connect(ConnParams) of
         {ok, Conn} ->
             ok = epgsql:close(Conn);
@@ -420,6 +420,15 @@ db_pools(#{db := DB, mod := DBMod}, Config) ->
 %%--------------------------------------------------------------------
 db_config(DB, Config) ->
     maps:get(DB, req_val(connect_info, Config), []).
+
+%%--------------------------------------------------------------------
+db_conn_params(DB, Config) ->
+    case db_config(DB, Config) of
+        #{connection := ConnParams} ->
+            ConnParams;
+        Val ->
+            Val
+    end.
 
 %%--------------------------------------------------------------------
 set_all_env(App, Props) ->

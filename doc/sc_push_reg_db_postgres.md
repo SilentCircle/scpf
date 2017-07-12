@@ -12,11 +12,51 @@
 
 
 
+### <a name="type-config">config()</a> ###
+
+
+<pre><code>
+config() = <a href="#type-simple_config">simple_config()</a> | <a href="#type-extended_config">extended_config()</a>
+</code></pre>
+
+
+
+
 ### <a name="type-ctx">ctx()</a> ###
 
 
 <pre><code>
 ctx() = #sc_push_reg_db_postgres{}
+</code></pre>
+
+
+
+
+### <a name="type-ext_cfg_connection_only">ext_cfg_connection_only()</a> ###
+
+
+<pre><code>
+ext_cfg_connection_only() = #{connection =&gt; <a href="#type-simple_config">simple_config()</a>}
+</code></pre>
+
+
+
+
+### <a name="type-ext_cfg_full">ext_cfg_full()</a> ###
+
+
+<pre><code>
+ext_cfg_full() = #{connection =&gt; <a href="#type-simple_config">simple_config()</a>, table_config =&gt; <a href="#type-table_config">table_config()</a>}
+</code></pre>
+
+
+
+
+### <a name="type-extended_config">extended_config()</a> ###
+
+
+<pre><code>
+extended_config() = <a href="#type-ext_cfg_connection_only">ext_cfg_connection_only()</a> | <a href="#type-ext_cfg_full">ext_cfg_full()</a>
 </code></pre>
 
 
@@ -37,6 +77,16 @@ mult_svc_tok_ts() = <a href="sc_push_reg_db.md#type-mult_svc_tok_ts">sc_push_reg
 
 <pre><code>
 nonempty_reg_proplists() = [<a href="#type-reg_proplist">reg_proplist()</a>, ...]
+</code></pre>
+
+
+
+
+### <a name="type-pl">pl()</a> ###
+
+
+<pre><code>
+pl(KT, VT) = [{KT, VT}]
 </code></pre>
 
 
@@ -72,11 +122,31 @@ reg_proplist() = <a href="sc_types.md#type-reg_proplist">sc_types:reg_proplist()
 
 
 
+### <a name="type-simple_config">simple_config()</a> ###
+
+
+<pre><code>
+simple_config() = <a href="#type-pl">pl</a>(atom(), string())
+</code></pre>
+
+
+
+
 ### <a name="type-svc_tok_key">svc_tok_key()</a> ###
 
 
 <pre><code>
 svc_tok_key() = <a href="sc_push_reg_db.md#type-svc_tok_key">sc_push_reg_db:svc_tok_key()</a>
+</code></pre>
+
+
+
+
+### <a name="type-table_config">table_config()</a> ###
+
+
+<pre><code>
+table_config() = <a href="#type-pl">pl</a>(atom(), string())
 </code></pre>
 
 <a name="index"></a>
@@ -144,7 +214,7 @@ but may change without notice.</dd>
 db_init(Config) -&gt; {ok, Context} | {error, Reason}
 </code></pre>
 
-<ul class="definitions"><li><code>Config = <a href="proplists.md#type-proplist">proplists:proplist()</a></code></li><li><code>Context = <a href="#type-ctx">ctx()</a></code></li><li><code>Reason = term()</code></li></ul>
+<ul class="definitions"><li><code>Config = <a href="#type-config">config()</a></code></li><li><code>Context = <a href="#type-ctx">ctx()</a></code></li><li><code>Reason = term()</code></li></ul>
 
 Initialize the database connection.
 
@@ -156,14 +226,40 @@ Return an opaque context for use with the other API calls.
 
 
 
-<dd>A property list containing at least
-the following properties:
+
+<dd>This may be provided one of the following formats:
+<ul>
+<li><em>Simple format</em>A property list containing at least
+the following properties (plus any others supported by
+<code>epgsql</code>, to which the property list is passed directly):
 <dl>
 <dt><code>hostname :: string()</code></dt><dd>Postgres host name</dd>
 <dt><code>database :: string()</code></dt><dd>Database name</dd>
 <dt><code>username :: string()</code></dt><dd>User (role) name</dd>
 <dt><code>password :: string()</code></dt><dd>User/role password</dd>
 </dl>
+</li>
+<li><em>Extended format</em>A map with the following keys and
+values:
+<dl>
+<dt><code>connection :: proplist()</code> (required)</dt>
+<dd>A property list as defined in the <em>Simple
+format</em></dd>
+<dt><code>table_config :: proplist()</code> (optional)</dt>
+<dd>A property list containing zero or more of the
+following properties:
+<dl>
+<dt><code>table_name :: string()</code></dt>
+<dd> The name of the push tokens table (default:
+<code>"push_tokens"</code>)</dd>
+<dt><code>table_schema :: string()</code></dt>
+<dd>The name of the push tokens table schema (default:
+<code>"public"</code>)</dd>
+</dl>
+</dd>
+</dl>
+</li>
+</ul>
 </dd>
 
 
@@ -173,8 +269,51 @@ the following properties:
 
 
 
+
 <dd>An opaque term returned to the caller.</dd>
 
+
+
+### Example 1: Simple format ###
+
+```
+  Config = [
+   {hostname, "db.example.com"},
+   {database, "mydb"},
+   {username, "mydbuser"},
+   {password, "mydbpasswd"}
+  ].
+```
+
+### Example 2: Extended format without table info ###
+
+```
+  Config = #{
+    connection => [
+                   {hostname, "db.example.com"},
+                   {database, "mydb"},
+                   {username, "mydbuser"},
+                   {password, "mydbpasswd"}
+                  ]
+  }.
+```
+
+### Example 3: Extended format with table info ###
+
+```
+  Config = #{
+    connection => [
+                   {hostname, "db.example.com"},
+                   {database, "mydb"},
+                   {username, "mydbuser"},
+                   {password, "mydbpasswd"}
+                  ],
+    table_config => [
+                     {table_name, "push_tokens"},
+                     {table_schema, "public"}
+                    ]
+  }.
+```
 
 
 <a name="db_terminate-1"></a>
